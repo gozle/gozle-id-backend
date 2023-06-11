@@ -1,0 +1,248 @@
+from django.http import HttpResponse, HttpResponseRedirect
+from django.contrib.auth import authenticate, login
+from django.shortcuts import render, redirect
+from django.views.decorators.csrf import csrf_exempt
+from django.core.mail import send_mail
+
+from users.models import User, Verification, TempUser, get_valid_phone_number
+from users.serializers import UserSerializer
+
+from .forms import CustomUserCreationForm
+
+from sms import sms_sender
+
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.response import Response
+from rest_framework import status
+
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
+
+from rest_framework import permissions
+from rest_framework import views
+from rest_framework.authtoken.models import Token
+
+import random
+# Create your views here.
+
+################# SIGN-UP ############################
+
+
+@swagger_auto_schema(method='post', request_body=openapi.Schema(
+    type=openapi.TYPE_OBJECT,
+    properties={
+        'username': openapi.Schema(type=openapi.TYPE_STRING, description='Username'),
+        'first_name': openapi.Schema(type=openapi.TYPE_STRING, description='First Name'),
+        'last_name': openapi.Schema(type=openapi.TYPE_STRING, description='Last Name'),
+        'email': openapi.Schema(type=openapi.TYPE_STRING, description='Email'),
+        'birthday': openapi.Schema(type=openapi.TYPE_STRING, description='Birthday'),
+        'ip_address': openapi.Schema(type=openapi.TYPE_STRING, description='IP Address'),
+        'mac_address': openapi.Schema(type=openapi.TYPE_STRING, description='Mac Address'),
+        'phone_number': openapi.Schema(type=openapi.TYPE_STRING, description='Phone Number'),
+        'device_info': openapi.Schema(type=openapi.TYPE_STRING, description='Device Info'),
+        'password1': openapi.Schema(type=openapi.TYPE_STRING, description='Password'),
+        'password2': openapi.Schema(type=openapi.TYPE_STRING, description='Password 2'),
+        'avatar': openapi.Schema(type=openapi.TYPE_FILE, description='Avatar'),
+    }
+))
+@api_view(["POST"])
+@permission_classes([permissions.AllowAny])
+@csrf_exempt
+def sign_up(request):
+#    form = CustomUserCreationForm(request.POST, request.FILES or None)
+#    if not form.is_valid():
+    phone_number = get_valid_phone_number(request.POST.get('phone_number'))
+    
+    if phone_number != '':
+        if User.objects.filter(phone_number=phone_number).exists():
+            user = User.objecs.get(phone_number=phone_number)
+#            return Response({'message': 'User with this phone number already exists'}, status=status.HTTP_403_FORBIDDEN)
+        else:
+            random_username = random.randint(100000000, 10000000000)
+            while User.objects.filter(username=str(random_username)).exists():
+                random_username = random.randint(100000000, 10000000000)
+            user = User()
+            user.username = str(random_username)
+            user.is_active = False
+            user.phone_number = phone_number
+            user.save()
+        
+        phone_number = user.phone_number
+        verification_number = random.randint(1000,9999)
+
+        sms_sender.send(phone_number, str(verification_number))
+
+        user.verification_number = verification_number
+        user = User.objects.get(id=user.id)
+
+        Token.objects.create(user=user)
+
+        verification = Verification(code=verification_number, user=user).save()
+
+        return Response(UserSerializer(user).data)
+    else:
+        return Response({"message": "Phone Number or Password can't be blank"}, status=status.HTTP_403_FORBIDDEN)
+
+@swagger_auto_schema(method='post', request_body=openapi.Schema(
+    type=openapi.TYPE_OBJECT,
+    properties={
+        'username': openapi.Schema(type=openapi.TYPE_STRING, description='Username'),
+        'verification-code': openapi.Schema(type=openapi.TYPE_STRING, description='Verification Code'),
+    }
+))
+@api_view(['POST'])
+@permission_classes([permissions.AllowAny])
+@csrf_exempt
+def verify_number(request):
+    username = request.POST.get('phone_number')
+    code = int(request.POST.get('verification-code'))
+    if User.objects.filter(phone_number=get_valid_phone_number(username)).exists():
+        user = User.objects.get(phone_number=get_valid_phone_number(username))
+    else:
+        return Response({'message': 'User Not Found'}, status=status.HTTP_404_NOT_FOUND)
+
+    if user.verification and user.verification.code == code:
+        user.is_active = True
+        user.save()
+        Verification.objects.get(code=code).delete()
+        return Response({'user': UserSerializer(user).data, 'token': user.auth_token.key})
+    return Response({'status': False, 'Error': 'Invalid Code'}, status=status.HTTP_401_UNAUTHORIZED)
+
+class LoginView(views.APIView):
+    # This view should be accessible also for unauthenticated users.
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request, format=None):
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        
+        if User.objects.filter(username=username).exists():
+            username = username
+        elif User.objects.filter(phone_number=get_valid_phone_number(username)).exists():
+            username = User.objects.get(phone_number=username).username
+        elif User.objects.filter(email=username).exists():
+            username = User.objects.get(email=username).username
+
+
+        user = authenticate(username=username, password=password)
+        
+        if user is not None:
+            response = {"user": UserSerializer(user).data, "token": user.auth_token.key}
+            return Response(response)
+
+        return Response({"message": "Invalid username or password"}, status=status.HTTP_202_ACCEPTED)
+
+    def get(self, request):
+        if request.user.is_authenticated:
+            return Response(UserSerializer(request.user).data)
+        else:
+            return Response({'message': 'User is not authorized'}, status=status.HTTP_401_UNAUTHORIZED)
+
+@swagger_auto_schema(method='post', request_body=openapi.Schema(
+    type=openapi.TYPE_OBJECT,
+    properties={
+        'username': openapi.Schema(type=openapi.TYPE_STRING, description='Username'),
+        'password': openapi.Schema(type=openapi.TYPE_STRING, description='Password'),
+    }
+))
+@api_view(["POST"])
+@csrf_exempt
+def update(request):
+    if not request.user:
+         return Response({'message': "Not Authorized"}, status=status.HTTP_401_UNAUTHORIZED)
+    user = User.objects.get(pk=request.user.id)
+    user.username = request.POST.get('username') if request.POST.get('username') else user.username
+    user.first_name = request.POST.get('first_name') if request.POST.get('first_name') else user.first_name
+    user.last_name = request.POST.get('last_name') if request.POST.get('last_name') else user.last_name
+    user.birthday = request.POST.get('birthday') if request.POST.get('birthday') else user.birthday
+    user.email = request.POST.get('email') if request.POST.get('email') else user.email
+    user.avatar = request.FILES.get(
+        'avatar') if request.FILES.get('avatar') else user.avatar
+
+    user.save()
+    serializer = UserSerializer(user)
+    return Response(serializer.data)
+
+
+@swagger_auto_schema(method='post', request_body=openapi.Schema(
+    type=openapi.TYPE_OBJECT,
+    properties={
+        'username': openapi.Schema(type=openapi.TYPE_STRING, description='Username'),
+        'password1': openapi.Schema(type=openapi.TYPE_STRING, description='Password'),
+        'password2': openapi.Schema(type=openapi.TYPE_STRING, description='Password 2'),
+        'verify-by': openapi.Schema(type=openapi.TYPE_STRING, description='Verify by number or email'),
+    }
+))
+@api_view(["POST"])
+@permission_classes([permissions.AllowAny])
+@csrf_exempt
+def change_password(request):
+    username = request.POST.get('username')
+    verify_by = request.POST.get('verify-by')
+    password1 = request.POST.get('password1')
+    password2 = request.POST.get('password2')
+
+    if User.objects.filter(username=username).exists():
+        user = User.objects.get(username=username)
+    elif User.objects.filter(phone_number=username).exists():
+        user = User.objects.get(phone_number=username)
+    elif User.objects.filter(email=username).exists():
+        user = User.objects.get(email=username)
+    else:
+        return Response({'message': 'User Not Found'}, status=status.HTTP_404_NOT_FOUND)
+
+    if password1 != password2:
+        return Response({"message": "Passwords don't match"}, status=status.HTTP_401_UNAUTHORIZED)
+
+    verification_number = random.randint(1000,9999)
+    if TempUser.objects.filter(user_id=user.id).exists():
+        TempUser.objects.get(user_id=user.id).delete()
+    temp_user = TempUser(user_id=user.id, password=password1, code=verification_number)
+
+    if verify_by == "number":
+        phone_number = user.phone_number
+        sms_sender.send(phone_number, str(verification_number))
+    else:
+        email = user.email
+        send_mail("Verification", str(verification_number), "verification@gozle.com.tm", [email])
+
+    temp_user.save()
+    return Response({'message': 'Please verify to change password'}, status=status.HTTP_202_ACCEPTED)
+
+
+@swagger_auto_schema(method='post', request_body=openapi.Schema(
+    type=openapi.TYPE_OBJECT,
+    properties={
+        'username': openapi.Schema(type=openapi.TYPE_STRING, description='Username'),
+        'verification-code': openapi.Schema(type=openapi.TYPE_STRING, description='Verification Code'),
+    }
+))
+@api_view(["POST"])
+@permission_classes([permissions.AllowAny])
+@csrf_exempt
+def change_password_verify(request):
+    username = request.POST.get('username')
+    code = request.POST.get('verification-code')
+
+    if User.objects.filter(username=username).exists():
+        user = User.objects.get(username=username)
+    elif User.objects.filter(phone_number=username).exists():
+        user = User.objects.get(phone_number=username)
+    elif User.objects.filter(email=username).exists():
+        user = User.objects.get(email=username)
+    else:
+        return Response({'message': 'User Not Found'}, status=status.HTTP_404_NOT_FOUND)
+
+    user_id = user.id
+    try:
+        temp_user = TempUser.objects.get(user_id=user_id)
+    except:
+        return Response({'message': 'Password Change is not requested'}, status=status.HTTP_404_NOT_FOUND)
+    if temp_user.code != int(code):
+        return Response({'message': 'Verification Code is not valid'}, status=status.HTTP_401_UNAUTHORIZED)
+    user.set_password(temp_user.password)
+    user.save()
+
+    temp_user.delete()
+
+    return Response({"message": "Password Changed Successfully"}, status=status.HTTP_202_ACCEPTED)
