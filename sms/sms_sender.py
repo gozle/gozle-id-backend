@@ -8,7 +8,7 @@ import time
 import uuid
 import requests
 
-API_URL = 'http://172.16.1.227:12501/api/'
+API_URL = 'http://172.16.1.227:8080/api/'
 USER = 'gozle'
 SECRET = b'P7t+1fw0VzRZllYhsP5mFMsu1iOff7YACdc3LLW4IQA='
 #DEST = '99361960135'
