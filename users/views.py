@@ -159,6 +159,7 @@ def get_user(request):
 
 
 @api_view(["GET"])
+@permission_classes([permissions.AllowAny])
 @csrf_exempt
 def get_user_server(request):
     user_id = request.POST.get('user_id')
