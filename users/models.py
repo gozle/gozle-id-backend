@@ -89,7 +89,7 @@ STATUS_CHOICES = (
 class Order(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     order_id = models.CharField(max_length=150, blank=True, null=True)
-    user = models.ForeignKey(User, related_name='orders')
+    user = models.ForeignKey(User, related_name='orders', on_delete=models.CASCADE)
     
     description = models.TextField(blank=True, null=True)
     amount = models.IntegerField()
