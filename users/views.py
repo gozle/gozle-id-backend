@@ -158,7 +158,7 @@ def get_user(request):
     return Response(serializer.data)
 
 
-@api_view(["GET"])
+@api_view(["POST"])
 @permission_classes([permissions.AllowAny])
 @csrf_exempt
 def get_user_server(request):
