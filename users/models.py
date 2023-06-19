@@ -79,3 +79,22 @@ class TempToken(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='temptoken')
     token = models.CharField(max_length = 200)
     created_at = models.DateTimeField(auto_now_add = True)
+
+STATUS_CHOICES = (
+    ('pending', "Pending"),
+    ('error', "Error"),
+    ('completed', "Completed"),
+)
+
+class Order(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
+    order_id = models.CharField(max_length=150, blank=True, null=True)
+    user = models.ForeignKey(User, related_name='orders')
+    
+    description = models.TextField(blank=True, null=True)
+    amount = models.IntegerField()
+    currency = models.CharField(max_length = 10, default="TMT", blank=True)
+    status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='pending')
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)

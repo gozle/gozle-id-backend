@@ -1,17 +1,19 @@
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth import authenticate, login
-from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt
 from django.core.mail import send_mail
 from django.utils import timezone
 from django.utils.crypto import get_random_string
+from django.conf import settings
 
-from users.models import User, Verification, TempUser, get_valid_phone_number, TempToken
+from users.models import Order, User, Verification, TempUser, get_valid_phone_number, TempToken
 from users.serializers import UserSerializer
 
 from .forms import CustomUserCreationForm
 
 from sms import sms_sender
+
+import xml.etree.ElementTree as ET
 
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
@@ -24,7 +26,7 @@ from rest_framework import permissions
 from rest_framework import views
 from rest_framework.authtoken.models import Token
 
-import random
+import random, requests
 # Create your views here.
 
 ################# SIGN-UP ############################
@@ -119,35 +121,6 @@ def verify_number(request):
             return Response({'2fa': token.token})
     return Response({'status': False, 'Error': 'Invalid Code'}, status=status.HTTP_401_UNAUTHORIZED)
 
-class LoginView(views.APIView):
-    # This view should be accessible also for unauthenticated users.
-    permission_classes = [permissions.AllowAny]
-
-    def post(self, request, format=None):
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        
-        if User.objects.filter(username=username).exists():
-            username = username
-        elif User.objects.filter(phone_number=get_valid_phone_number(username)).exists():
-            username = User.objects.get(phone_number=username).username
-        elif User.objects.filter(email=username).exists():
-            username = User.objects.get(email=username).username
-
-
-        user = authenticate(username=username, password=password)
-        
-        if user is not None:
-            response = {"user": UserSerializer(user).data, "token": user.auth_token.key}
-            return Response(response)
-
-        return Response({"message": "Invalid username or password"}, status=status.HTTP_202_ACCEPTED)
-
-    def get(self, request):
-        if request.user.is_authenticated:
-            return Response(UserSerializer(request.user).data)
-        else:
-            return Response({'message': 'User is not authorized'}, status=status.HTTP_401_UNAUTHORIZED)
 
 @swagger_auto_schema(method='post', request_body=openapi.Schema(
     type=openapi.TYPE_OBJECT,
@@ -184,89 +157,6 @@ def get_user(request):
     serializer = UserSerializer(user)
     return Response(serializer.data)
 
-
-@swagger_auto_schema(method='post', request_body=openapi.Schema(
-    type=openapi.TYPE_OBJECT,
-    properties={
-        'username': openapi.Schema(type=openapi.TYPE_STRING, description='Username'),
-        'password1': openapi.Schema(type=openapi.TYPE_STRING, description='Password'),
-        'password2': openapi.Schema(type=openapi.TYPE_STRING, description='Password 2'),
-        'verify-by': openapi.Schema(type=openapi.TYPE_STRING, description='Verify by number or email'),
-    }
-))
-@api_view(["POST"])
-@permission_classes([permissions.AllowAny])
-@csrf_exempt
-def change_password(request):
-    username = request.POST.get('username')
-    verify_by = request.POST.get('verify-by')
-    password1 = request.POST.get('password1')
-    password2 = request.POST.get('password2')
-
-    if User.objects.filter(username=username).exists():
-        user = User.objects.get(username=username)
-    elif User.objects.filter(phone_number=username).exists():
-        user = User.objects.get(phone_number=username)
-    elif User.objects.filter(email=username).exists():
-        user = User.objects.get(email=username)
-    else:
-        return Response({'message': 'User Not Found'}, status=status.HTTP_404_NOT_FOUND)
-
-    if password1 != password2:
-        return Response({"message": "Passwords don't match"}, status=status.HTTP_401_UNAUTHORIZED)
-
-    verification_number = random.randint(1000,9999)
-    if TempUser.objects.filter(user_id=user.id).exists():
-        TempUser.objects.get(user_id=user.id).delete()
-    temp_user = TempUser(user_id=user.id, password=password1, code=verification_number)
-
-    if verify_by == "number":
-        phone_number = user.phone_number
-        sms_sender.send(phone_number, str(verification_number))
-    else:
-        email = user.email
-        send_mail("Verification", str(verification_number), "verification@gozle.com.tm", [email])
-
-    temp_user.save()
-    return Response({'message': 'Please verify to change password'}, status=status.HTTP_202_ACCEPTED)
-
-
-@swagger_auto_schema(method='post', request_body=openapi.Schema(
-    type=openapi.TYPE_OBJECT,
-    properties={
-        'username': openapi.Schema(type=openapi.TYPE_STRING, description='Username'),
-        'verification-code': openapi.Schema(type=openapi.TYPE_STRING, description='Verification Code'),
-    }
-))
-@api_view(["POST"])
-@permission_classes([permissions.AllowAny])
-@csrf_exempt
-def change_password_verify(request):
-    username = request.POST.get('username')
-    code = request.POST.get('verification-code')
-
-    if User.objects.filter(username=username).exists():
-        user = User.objects.get(username=username)
-    elif User.objects.filter(phone_number=username).exists():
-        user = User.objects.get(phone_number=username)
-    elif User.objects.filter(email=username).exists():
-        user = User.objects.get(email=username)
-    else:
-        return Response({'message': 'User Not Found'}, status=status.HTTP_404_NOT_FOUND)
-
-    user_id = user.id
-    try:
-        temp_user = TempUser.objects.get(user_id=user_id)
-    except:
-        return Response({'message': 'Password Change is not requested'}, status=status.HTTP_404_NOT_FOUND)
-    if temp_user.code != int(code):
-        return Response({'message': 'Verification Code is not valid'}, status=status.HTTP_401_UNAUTHORIZED)
-    user.set_password(temp_user.password)
-    user.save()
-
-    temp_user.delete()
-
-    return Response({"message": "Password Changed Successfully"}, status=status.HTTP_202_ACCEPTED)
 
 
 @api_view(["POST"])
@@ -324,3 +214,66 @@ def tfa(request, action):
             return Response({'detail': "Token is noe correct"}, status=status.HTTP_403_FORBIDDEN)
     return Response({'success': 'User password and two factor auth updated'})
 
+
+
+@api_view(["POST"])
+@permission_classes([permissions.AllowAny])
+@csrf_exempt
+def register_order(request):
+    if request.user.is_anonymous:
+            return Response({'detail': "Authentication credentials were not provided."}, status=status.HTTP_403_FORBIDDEN)
+
+    description =request.POST.get('description')
+    amount = request.POST.get('amount')
+    returnUrl = request.POST.get('returnUrl')
+    failUrl = request.POST.get('failUrl')
+    lang = request.POST.get('language')
+    pageView = request.POST.get('pageView')
+
+    order = Order(user=request.user, description=description, amount=amount)
+    order.save()
+
+    request_url = ""
+
+    data = {
+        'userName': settings.MERCHANT_USERNAME,
+        'password': settings.MERCHANT_PASSWORD,
+        'orderNumber': order.id,
+        'amount': order.amount,
+        'currency': order.currency,
+        'returnUrl': returnUrl,
+        'failUrl': failUrl,
+        'description': description,
+        'language': lang,
+        'pageView': pageView
+    }
+    
+    response = requests.post(request_url, data=data)
+
+    response_data = response.json()
+    order.order_id = response_data['orderId']
+    return Response(response_data)
+
+
+@api_view(["POST"])
+@permission_classes([permissions.AllowAny])
+@csrf_exempt
+def order_status(request):
+    if request.user.is_anonymous:
+            return Response({'detail': "Authentication credentials were not provided."}, status=status.HTTP_403_FORBIDDEN)
+
+    orderId =request.POST.get('orderId')
+
+    request_url = ""
+
+    data = {
+        'userName': settings.MERCHANT_USERNAME,
+        'password': settings.MERCHANT_PASSWORD,
+        'orderId': orderId
+    }
+    
+    response = requests.post(request_url, data=data)
+
+    response_data = response.json()
+    
+    return Response(response_data)

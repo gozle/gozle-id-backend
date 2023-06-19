@@ -2,6 +2,7 @@ from django.urls import path
 #from users.user_service import UserService
 
 from users.views import sign_up, update, LoginView, verify_number, change_password, change_password_verify, get_user, tfa
+from users.views import register_order, order_status
 
 urlpatterns = [
     path('sign-up', sign_up),
@@ -11,6 +12,8 @@ urlpatterns = [
     path('verify', verify_number),
     path('change-password', change_password),
     path('change-password-verify', change_password_verify),
-    path('2fa/<str:action>', tfa)
+    path('2fa/<str:action>', tfa),
+    path('order/register', register_order),
+    path('order/status', order_status)
 #    path('rpc/user_service/', UserService.as_view())
 ]
