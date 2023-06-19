@@ -18,6 +18,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 MERCHANT_USERNAME = ''
 MERCHANT_PASSWORD = ''
 
+SERVER_TOKEN = 'IksnlMZa4cTTjbZx-Qxa5I0F0gE8NoEMF!=ZLgWL1nVGM-8mGrknEvw0K7SGAUGD'
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 

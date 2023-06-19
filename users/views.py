@@ -158,6 +158,19 @@ def get_user(request):
     return Response(serializer.data)
 
 
+@api_view(["GET"])
+@csrf_exempt
+def get_user_server(request):
+    user_id = request.POST.get('user_id')
+
+    token = request.META.get('HTTP_AUTHORIZATION')
+    if not token or token != settings.SERVER_TOKEN:
+        return Response({'message': "Not Authorized"}, status=status.HTTP_401_UNAUTHORIZED)
+
+    user = User.objects.get(id=user_id)
+    serializer = UserSerializer(user)
+    return Response(serializer.data)
+
 
 @api_view(["POST"])
 @permission_classes([permissions.AllowAny])
