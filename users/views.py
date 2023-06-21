@@ -310,11 +310,12 @@ def transfer_request(request):
     if amount > user.balance:
         return Response({'message': "User's balance is smaller than amount"})
 
-    transfer = Transfer.objects.create(sender=user, receiver=receiver, amount=amount, completed=False)
+    verification_number = random.randint(10000, 99999)
+    transfer = Transfer.objects.create(sender=user, receiver=receiver, amount=amount, 
+                                       completed=False, verification_code=verification_number)
     transfer.save()
 
     # Send SMS to sender
-    verification_number = random.randint(10000, 99999)
     sms_sender.send(user.phone_number, 'Transferring {} GC to {}. Verification code: {}'.format(amount, receiver.phone_number, verification_number))
     transfer.verification_code = verification_number
     transfer.save()
