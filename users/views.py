@@ -333,7 +333,7 @@ def transfer_verify(request):
     user = request.user
     verification_number = request.POST.get('verification-code')
 
-    transfer = Transfer.objects.filter(user=user, verification_code=verification_number, completed=False).first()
+    transfer = Transfer.objects.filter(sender=user, verification_code=verification_number, completed=False).first()
     if transfer is None:
         return Response({'message': 'Transfer request is not sent'})
     
