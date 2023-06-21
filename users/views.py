@@ -295,11 +295,11 @@ def order_status(request):
 
 @api_view(["POST"])
 @csrf_exempt
-def transfer(request):
+def transfer_request(request):
     if request.user.is_anonymous:
             return Response({'detail': "Authentication credentials were not provided."}, status=status.HTTP_403_FORBIDDEN)
     
-    current_user = request.user
+    user = request.user
     send_to = request.POST.get('send_to')
     amount = request.POST.get('amount')
 
@@ -307,14 +307,45 @@ def transfer(request):
     if receiver is None:
         return Response({'message': 'Receiver not found'})
 
-    transfer = Transfer.objects.create(sender=current_user, receiver=receiver, amount=amount)
+    if amount > user.balance:
+        return Response({'message': "User's balance is smaller than amount"})
+
+    transfer = Transfer.objects.create(sender=user, receiver=receiver, amount=amount, completed=False)
     transfer.save()
 
     # Send SMS to sender
-    verification_number = random.randint(1000, 9999)
-    sms_sender.send(current_user.phone_number, 'Transferring {} GC to {}. Verification code: {}'.format(amount, receiver.phone_number, verification_number))
+    verification_number = random.randint(10000, 99999)
+    sms_sender.send(user.phone_number, 'Transferring {} GC to {}. Verification code: {}'.format(amount, receiver.phone_number, verification_number))
     transfer.verification_code = verification_number
     transfer.save()
     # Save verification number
     
     return Response({'message': 'Waiting for varification...'})
+
+
+@api_view(["POST"])
+@csrf_exempt
+def transfer_verify(request):
+    if request.user.is_anonymous:
+            return Response({'detail': "Authentication credentials were not provided."}, status=status.HTTP_403_FORBIDDEN)
+    
+    user = request.user
+    verification_number = request.POST.get('verification-code')
+
+    transfer = Transfer.objects.filter(user=user, verification_code=verification_number, completed=False).first()
+    if transfer is None:
+        return Response({'message': 'Transfer request is not sent'})
+    
+    user.balance -= transfer.amount
+    user.save()
+    receiver = transfer.receiver
+    receiver.balance += transfer.amount
+    receiver.save()
+
+    transfer.completed = True
+    transfer.save()
+
+    # Send SMS to sender
+    # Save verification number
+    
+    return Response({'message': 'Transferred successfully'})

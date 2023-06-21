@@ -40,8 +40,8 @@ class User(AbstractUser):
     last_name = models.CharField(max_length=100, validators=[validate_names])
     birthday = models.DateField(null=True, blank=True)
     balance = models.IntegerField(default=0, blank=True)
-    ip_address = models.CharField(max_length=400, ) #unique=True) # validators=[validate_value(field='ip')])
-    mac_address = models.CharField(max_length=400, ) # unique=True) # validators=[self.validate_value(field='mac')])
+    ip_address = models.CharField(max_length=400, blank=True, null=True) #unique=True) # validators=[validate_value(field='ip')])
+    mac_address = models.CharField(max_length=400, blank=True, null=True) # unique=True) # validators=[self.validate_value(field='mac')])
     phone_number = models.CharField(max_length=30, unique=True, validators=[validate_phone_number])
     device_info = models.CharField(max_length=400, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -108,6 +108,7 @@ class Transfer(models.Model):
 
     verification_code = models.IntegerField()
 
+    completed = models.BooleanField(default=False, blank=True)
     date = models.DateTimeField(auto_now=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
