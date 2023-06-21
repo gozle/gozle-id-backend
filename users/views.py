@@ -6,7 +6,7 @@ from django.utils import timezone
 from django.utils.crypto import get_random_string
 from django.conf import settings
 
-from users.models import Order, User, Verification, TempUser, get_valid_phone_number, TempToken
+from users.models import Order, Transfer, User, Verification, TempUser, get_valid_phone_number, TempToken
 from users.serializers import UserSerializer
 
 from .forms import CustomUserCreationForm
@@ -291,3 +291,30 @@ def order_status(request):
     response_data = response.json()
     
     return Response(response_data)
+
+
+@api_view(["POST"])
+@csrf_exempt
+def transfer(request):
+    if request.user.is_anonymous:
+            return Response({'detail': "Authentication credentials were not provided."}, status=status.HTTP_403_FORBIDDEN)
+    
+    current_user = request.user
+    send_to = request.POST.get('send_to')
+    amount = request.POST.get('amount')
+
+    receiver = User.objects.filter(phone_number=send_to).first()
+    if receiver is None:
+        return Response({'message': 'Receiver not found'})
+
+    transfer = Transfer.objects.create(sender=current_user, receiver=receiver, amount=amount)
+    transfer.save()
+
+    # Send SMS to sender
+    verification_number = random.randint(1000, 9999)
+    sms_sender.send(current_user.phone_number, 'Transferring {} GC to {}. Verification code: {}'.format(amount, receiver.phone_number, verification_number))
+    transfer.verification_code = verification_number
+    transfer.save()
+    # Save verification number
+    
+    return Response({'message': 'Waiting for varification...'})

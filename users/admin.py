@@ -7,7 +7,8 @@ from .models import User, Verification
 class CustomUserAdmin(admin.ModelAdmin):
     form = CustomUserChangeForm
     model = User
-    list_display = ["username", "first_name", "last_name", "email"]
+    list_display = ["username", "first_name", "phone_number", "balance"]
+    search_fields = ["username", "phone_number"]
 
 
 admin.site.register(User, CustomUserAdmin)
