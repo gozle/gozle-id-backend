@@ -301,7 +301,7 @@ def transfer_request(request):
     
     user = request.user
     send_to = request.POST.get('send_to')
-    amount = request.POST.get('amount')
+    amount = int(request.POST.get('amount'))
 
     receiver = User.objects.filter(phone_number=send_to).first()
     if receiver is None:
