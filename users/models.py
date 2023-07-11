@@ -170,6 +170,6 @@ class GiftCard(models.Model):
 
         # temp_file = open(temp_file, 'rb')
 
-        self.image.file = temp_file.name
+        self.image = temp_file.name
 
         super().save(*args, **kwargs)
