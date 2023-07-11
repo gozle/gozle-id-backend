@@ -144,6 +144,10 @@ class Transfer(models.Model):
         return f'{self.sender.username} sent {self.amount} to {self.receiver.username} at {self.timestamp}'
 
 
+def hyphenate(s):
+    return "-".join([s[i:i+4] for i in range(0, len(s), 4)])
+
+
 class GiftCard(models.Model):
     value = models.IntegerField()
     code = models.CharField(max_length=16, blank=True)
@@ -163,8 +167,9 @@ class GiftCard(models.Model):
         pil_image = PILImage.open(CARD_TEMPLATE)
         width, height = pil_image.size
         draw = ImageDraw.Draw(pil_image)
-        font = ImageFont.truetype(FONT, 32)
-        draw.text((width/2, height/2), self.code, fill='black', font=font)
+        font = ImageFont.truetype(FONT, 64)
+        draw.text((width/4, height/2), hyphenate(self.code),
+                  fill='black', font=font)
         temp_file = tempfile.NamedTemporaryFile()
         pil_image.save(temp_file, 'jpeg')
 
