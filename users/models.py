@@ -1,17 +1,27 @@
+import tempfile
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext_lazy as _
-
+from django.utils.crypto import get_random_string
 from django.core.validators import RegexValidator
 
+from django.core.files import File
+from PIL import Image as PILImage, ImageDraw, ImageFont
+
 from django.core.exceptions import ValidationError
-import re, uuid
+import re
+import string
+import uuid
 # Create your models here.
+
+CARD_TEMPLATE = "../static/card-template.jpg"
+
 
 def validate_phone_number(value):
     pattern = r'^(\+9936|9936|6|86)\d{7}$'
     if not re.match(pattern, value):
         raise ValidationError('Invalid phone number')
+
 
 def validate_names(value):
     pattern = r'^[\w\s]+$'
@@ -20,33 +30,39 @@ def validate_names(value):
     if re.search(r'\d', value):
         raise ValidationError("Name can't contain any numbers")
 
+
 def get_valid_phone_number(number):
-    if len(number)==11:
+    if len(number) == 11:
         return '+' + number
-    elif len(number)==8:
+    elif len(number) == 8:
         return '+993' + number
-    elif len(number)==9:
+    elif len(number) == 9:
         return '+993'+number[1:]
     return number
+
 
 class User(AbstractUser):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     username = models.CharField(max_length=30, unique=True, validators=[RegexValidator(
-                                    regex = '^[a-zA-Z0-9_]*$',
-                                    message = "Username must be alphanumeric and can only contain underscores",
-                                    code = 'invalid_username'
-                                )])
+        regex='^[a-zA-Z0-9_]*$',
+        message="Username must be alphanumeric and can only contain underscores",
+        code='invalid_username'
+    )])
     first_name = models.CharField(max_length=100, validators=[validate_names])
     last_name = models.CharField(max_length=100, validators=[validate_names])
     birthday = models.DateField(null=True, blank=True)
     balance = models.IntegerField(default=0, blank=True)
-    ip_address = models.CharField(max_length=400, blank=True, null=True) #unique=True) # validators=[validate_value(field='ip')])
-    mac_address = models.CharField(max_length=400, blank=True, null=True) # unique=True) # validators=[self.validate_value(field='mac')])
-    phone_number = models.CharField(max_length=30, unique=True, validators=[validate_phone_number])
+    # unique=True) # validators=[validate_value(field='ip')])
+    ip_address = models.CharField(max_length=400, blank=True, null=True)
+    # unique=True) # validators=[self.validate_value(field='mac')])
+    mac_address = models.CharField(max_length=400, blank=True, null=True)
+    phone_number = models.CharField(
+        max_length=30, unique=True, validators=[validate_phone_number])
     device_info = models.CharField(max_length=400, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    avatar = models.ImageField(upload_to='avatars/%d', default='default/default_avatar.jpg', blank=True, null=True)
+    avatar = models.ImageField(
+        upload_to='avatars/%d', default='default/default_avatar.jpg', blank=True, null=True)
     two_factor_auth = models.BooleanField(default=False, blank=True)
 
     def __str__(self):
@@ -59,13 +75,16 @@ class User(AbstractUser):
         self.validate_unique()
         super(User, self).save(*args, **kwargs)
 
+
 class Verification(models.Model):
     code = models.IntegerField()
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='verification')
+    user = models.OneToOneField(
+        User, on_delete=models.CASCADE, related_name='verification')
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.code
+
 
 class TempUser(models.Model):
     user_id = models.IntegerField()
@@ -75,10 +94,13 @@ class TempUser(models.Model):
     def __str__(self):
         return self.user_id
 
+
 class TempToken(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='temptoken')
-    token = models.CharField(max_length = 200)
-    created_at = models.DateTimeField(auto_now_add = True)
+    user = models.OneToOneField(
+        User, on_delete=models.CASCADE, related_name='temptoken')
+    token = models.CharField(max_length=200)
+    created_at = models.DateTimeField(auto_now_add=True)
+
 
 STATUS_CHOICES = (
     ('pending', "Pending"),
@@ -86,24 +108,28 @@ STATUS_CHOICES = (
     ('completed', "Completed"),
 )
 
+
 class Order(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     order_id = models.CharField(max_length=150, blank=True, null=True)
-    user = models.ForeignKey(User, related_name='orders', on_delete=models.CASCADE)
-    
+    user = models.ForeignKey(
+        User, related_name='orders', on_delete=models.CASCADE)
+
     description = models.TextField(blank=True, null=True)
     amount = models.IntegerField()
-    currency = models.CharField(max_length = 10, default="TMT", blank=True)
-    status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='pending')
+    currency = models.CharField(max_length=10, default="TMT", blank=True)
+    status = models.CharField(
+        max_length=50, choices=STATUS_CHOICES, default='pending')
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
 
-
 class Transfer(models.Model):
-    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sent_transfers')
-    receiver = models.ForeignKey(User, on_delete=models.CASCADE, related_name='received_transfers')
+    sender = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='sent_transfers')
+    receiver = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='received_transfers')
     amount = models.IntegerField()
 
     verification_code = models.IntegerField()
@@ -114,3 +140,32 @@ class Transfer(models.Model):
 
     def __str__(self):
         return f'{self.sender.username} sent {self.amount} to {self.receiver.username} at {self.timestamp}'
+
+
+class GiftCard(models.Model):
+    value = models.IntegerField()
+    code = models.CharField(max_length=16, blank=True)
+    image = models.ImageField(upload_to="cards/%d")
+    used = models.BooleanField(default=False)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.created_at
+
+    def save(self, *args, **kwargs):
+        if not self.code:
+            self.code = get_random_string(
+                16, string.ascii_uppercase + string.digits)
+
+        pil_image = PILImage.open(CARD_TEMPLATE)
+        width, height = pil_image.size
+        draw = ImageDraw.Draw(pil_image)
+        font = ImageFont.truetype('arial.ttf', 32)
+        draw.text((width/2, height/2), self.code, fill='black', font=font)
+        temp_file = tempfile.NamedTemporaryFile()
+        pil_image.save(temp_file, 'jpeg')
+
+        self.image.save(self.id+'.jpg', File(temp_file))
+
+        super().save(*args, **kwargs)
