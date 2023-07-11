@@ -16,6 +16,7 @@ import uuid
 # Create your models here.
 
 CARD_TEMPLATE = os.path.join(settings.STATIC_ROOT, "card-template.jpg")
+FONT = os.path.join(settings.STATIC_ROOT, "Roboto-Regular.ttf")
 
 
 def validate_phone_number(value):
@@ -162,7 +163,7 @@ class GiftCard(models.Model):
         pil_image = PILImage.open(CARD_TEMPLATE)
         width, height = pil_image.size
         draw = ImageDraw.Draw(pil_image)
-        font = ImageFont.truetype('arial.ttf', 32)
+        font = ImageFont.truetype(FONT, 32)
         draw.text((width/2, height/2), self.code, fill='black', font=font)
         temp_file = tempfile.NamedTemporaryFile()
         pil_image.save(temp_file, 'jpeg')
