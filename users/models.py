@@ -153,7 +153,7 @@ class GiftCard(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.code
+        return self.created_at
 
     def save(self, *args, **kwargs):
         if not self.code:
@@ -168,8 +168,7 @@ class GiftCard(models.Model):
         temp_file = tempfile.NamedTemporaryFile()
         pil_image.save(temp_file, 'jpeg')
 
-        # temp_file = open(temp_file, 'rb')
-
-        self.image = temp_file.name
+        if not self.image:
+            self.image.save(self.code+'.jpg', File(temp_file))
 
         super().save(*args, **kwargs)
