@@ -168,6 +168,8 @@ class GiftCard(models.Model):
         temp_file = tempfile.NamedTemporaryFile()
         pil_image.save(temp_file, 'jpeg')
 
-        self.image.save(self.code+'.jpg', File(temp_file))
+        temp_file = open(temp_file, 'rb')
+
+        self.image.file = temp_file
 
         super().save(*args, **kwargs)
