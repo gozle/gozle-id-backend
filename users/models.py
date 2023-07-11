@@ -1,10 +1,11 @@
 import tempfile
+from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext_lazy as _
 from django.utils.crypto import get_random_string
 from django.core.validators import RegexValidator
-
+import os
 from django.core.files import File
 from PIL import Image as PILImage, ImageDraw, ImageFont
 
@@ -14,7 +15,7 @@ import string
 import uuid
 # Create your models here.
 
-CARD_TEMPLATE = "../static/card-template.jpg"
+CARD_TEMPLATE = os.path.join(settings.STATIC_ROOT, "card-template.jpg")
 
 
 def validate_phone_number(value):
