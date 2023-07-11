@@ -145,7 +145,7 @@ class Transfer(models.Model):
 class GiftCard(models.Model):
     value = models.IntegerField()
     code = models.CharField(max_length=16, blank=True)
-    image = models.ImageField(upload_to="cards/%d")
+    image = models.ImageField(upload_to="cards/%d", blank=True)
     used = models.BooleanField(default=False)
 
     created_at = models.DateTimeField(auto_now_add=True)
