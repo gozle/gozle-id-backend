@@ -26,7 +26,8 @@ from rest_framework import permissions
 from rest_framework import views
 from rest_framework.authtoken.models import Token
 
-import random, requests
+import random
+import requests
 # Create your views here.
 
 ################# SIGN-UP ############################
@@ -53,41 +54,43 @@ import random, requests
 @permission_classes([permissions.AllowAny])
 @csrf_exempt
 def sign_up(request):
-#    form = CustomUserCreationForm(request.POST, request.FILES or None)
-#    if not form.is_valid():
+    #    form = CustomUserCreationForm(request.POST, request.FILES or None)
+    #    if not form.is_valid():
     phone_number = get_valid_phone_number(request.POST.get('phone_number'))
-    
+
     if phone_number != '':
         if User.objects.filter(phone_number=phone_number).exists():
             user = User.objects.get(phone_number=phone_number)
 #            return Response({'message': 'User with this phone number already exists'}, status=status.HTTP_403_FORBIDDEN)
         else:
             user = User()
-            random_username = random.randint(10000000,1000000000)
+            random_username = random.randint(10000000, 1000000000)
             user.username = str(random_username)
             user.is_active = False
             user.phone_number = phone_number
             user.save()
-        
+
         phone_number = user.phone_number
-        verification_number = random.randint(1000,9999)
+        verification_number = random.randint(1000, 9999)
         if Verification.objects.filter(user=user).exists():
             if Verification.objects.get(user=user).created_at > timezone.now() - timezone.timedelta(minutes=1):
                 return Response({"message": "Verification code is sent. Please wait 1 minutes before try again!"}, status=status.HTTP_403_FORBIDDEN)
             Verification.objects.filter(user=user).delete()
         verification = Verification(code=verification_number, user=user).save()
 
-        sms_sender.send(phone_number, 'Gozle ID code: ' + str(verification_number))
+        sms_sender.send(phone_number, 'Gozle ID code: ' +
+                        str(verification_number))
 
         user.verification_number = verification_number
         user.save()
 
         if not Token.objects.filter(user=user).exists():
             Token.objects.create(user=user)
-        
+
         return Response({'message': 'OK', 'status': 200})
     else:
         return Response({"message": "Phone Number or Password can't be blank"}, status=status.HTTP_403_FORBIDDEN)
+
 
 @swagger_auto_schema(method='post', request_body=openapi.Schema(
     type=openapi.TYPE_OBJECT,
@@ -133,13 +136,21 @@ def verify_number(request):
 @csrf_exempt
 def update(request):
     if not request.user:
-         return Response({'message': "Not Authorized"}, status=status.HTTP_401_UNAUTHORIZED)
+        return Response({'message': "Not Authorized"}, status=status.HTTP_401_UNAUTHORIZED)
     user = User.objects.get(pk=request.user.id)
-    user.username = request.POST.get('username') if request.POST.get('username') else user.username
-    user.first_name = request.POST.get('first_name') if request.POST.get('first_name') else user.first_name
-    user.last_name = request.POST.get('last_name') if request.POST.get('last_name') else user.last_name
-    user.birthday = request.POST.get('birthday') if request.POST.get('birthday') else user.birthday
-    user.email = request.POST.get('email') if request.POST.get('email') else user.email
+    if User.objects.filter(username=request.POST.get('username')).exists():
+        return Response({'username': "Already exists"}, status=status.HTTP_409_CONFLICT)
+
+    user.username = request.POST.get('username') if request.POST.get(
+        'username') else user.username
+    user.first_name = request.POST.get('first_name') if request.POST.get(
+        'first_name') else user.first_name
+    user.last_name = request.POST.get('last_name') if request.POST.get(
+        'last_name') else user.last_name
+    user.birthday = request.POST.get('birthday') if request.POST.get(
+        'birthday') else user.birthday
+    user.email = request.POST.get(
+        'email') if request.POST.get('email') else user.email
     user.avatar = request.FILES.get(
         'avatar') if request.FILES.get('avatar') else user.avatar
 
@@ -152,7 +163,7 @@ def update(request):
 @csrf_exempt
 def get_user(request):
     if not request.user:
-         return Response({'message': "Not Authorized"}, status=status.HTTP_401_UNAUTHORIZED)
+        return Response({'message': "Not Authorized"}, status=status.HTTP_401_UNAUTHORIZED)
     user = request.user
     serializer = UserSerializer(user)
     return Response(serializer.data)
@@ -183,7 +194,7 @@ def tfa(request, action):
     It returns a JSON response with a success or error message.
     """
 
-    if action=='activate':
+    if action == 'activate':
         # get the user and get the password from the request data
         if request.user.is_anonymous:
             return Response({'detail': "Authentication credentials were not provided."}, status=status.HTTP_403_FORBIDDEN)
@@ -205,7 +216,7 @@ def tfa(request, action):
         return Response({'message': 'Two Factor Authentication deactivated sucessfully'})
 
     elif action == 'check':
-#        print(request.user)
+        #        print(request.user)
         if request.user.is_anonymous:
             return Response({'detail': "Authentication credentials were not provided."}, status=status.HTTP_403_FORBIDDEN)
         user = request.user
@@ -223,11 +234,10 @@ def tfa(request, action):
                 TempToken.objects.get(token=token).delete()
                 return Response(response)
             else:
-               return Response({'message': 'Password is wrong!'}, status=status.HTTP_401_UNAUTHORIZED)
+                return Response({'message': 'Password is wrong!'}, status=status.HTTP_401_UNAUTHORIZED)
         else:
             return Response({'detail': "Token is noe correct"}, status=status.HTTP_403_FORBIDDEN)
     return Response({'success': 'User password and two factor auth updated'})
-
 
 
 @api_view(["POST"])
@@ -235,9 +245,9 @@ def tfa(request, action):
 @csrf_exempt
 def register_order(request):
     if request.user.is_anonymous:
-            return Response({'detail': "Authentication credentials were not provided."}, status=status.HTTP_403_FORBIDDEN)
+        return Response({'detail': "Authentication credentials were not provided."}, status=status.HTTP_403_FORBIDDEN)
 
-    description =request.POST.get('description')
+    description = request.POST.get('description')
     amount = request.POST.get('amount')
     returnUrl = request.POST.get('returnUrl')
     failUrl = request.POST.get('failUrl')
@@ -261,7 +271,7 @@ def register_order(request):
         'language': lang,
         'pageView': pageView
     }
-    
+
     response = requests.post(request_url, data=data)
 
     response_data = response.json()
@@ -274,9 +284,9 @@ def register_order(request):
 @csrf_exempt
 def order_status(request):
     if request.user.is_anonymous:
-            return Response({'detail': "Authentication credentials were not provided."}, status=status.HTTP_403_FORBIDDEN)
+        return Response({'detail': "Authentication credentials were not provided."}, status=status.HTTP_403_FORBIDDEN)
 
-    orderId =request.POST.get('orderId')
+    orderId = request.POST.get('orderId')
 
     request_url = ""
 
@@ -285,11 +295,11 @@ def order_status(request):
         'password': settings.MERCHANT_PASSWORD,
         'orderId': orderId
     }
-    
+
     response = requests.post(request_url, data=data)
 
     response_data = response.json()
-    
+
     return Response(response_data)
 
 
@@ -297,8 +307,8 @@ def order_status(request):
 @csrf_exempt
 def transfer_request(request):
     if request.user.is_anonymous:
-            return Response({'detail': "Authentication credentials were not provided."}, status=status.HTTP_403_FORBIDDEN)
-    
+        return Response({'detail': "Authentication credentials were not provided."}, status=status.HTTP_403_FORBIDDEN)
+
     user = request.user
     send_to = request.POST.get('send_to')
     amount = int(request.POST.get('amount'))
@@ -311,16 +321,17 @@ def transfer_request(request):
         return Response({'message': "User's balance is smaller than amount"})
 
     verification_number = random.randint(10000, 99999)
-    transfer = Transfer.objects.create(sender=user, receiver=receiver, amount=amount, 
+    transfer = Transfer.objects.create(sender=user, receiver=receiver, amount=amount,
                                        completed=False, verification_code=verification_number)
     transfer.save()
 
     # Send SMS to sender
-    sms_sender.send(user.phone_number, 'Transferring {} GC to {}. Verification code: {}'.format(amount, receiver.phone_number, verification_number))
+    sms_sender.send(user.phone_number, 'Transferring {} GC to {}. Verification code: {}'.format(
+        amount, receiver.phone_number, verification_number))
     transfer.verification_code = verification_number
     transfer.save()
     # Save verification number
-    
+
     return Response({'message': 'Waiting for varification...'})
 
 
@@ -328,15 +339,16 @@ def transfer_request(request):
 @csrf_exempt
 def transfer_verify(request):
     if request.user.is_anonymous:
-            return Response({'detail': "Authentication credentials were not provided."}, status=status.HTTP_403_FORBIDDEN)
-    
+        return Response({'detail': "Authentication credentials were not provided."}, status=status.HTTP_403_FORBIDDEN)
+
     user = request.user
     verification_number = request.POST.get('verification-code')
 
-    transfer = Transfer.objects.filter(sender=user, verification_code=verification_number, completed=False).first()
+    transfer = Transfer.objects.filter(
+        sender=user, verification_code=verification_number, completed=False).first()
     if transfer is None:
         return Response({'message': 'Transfer request is not sent'})
-    
+
     user.balance -= transfer.amount
     user.save()
     receiver = transfer.receiver
@@ -348,5 +360,5 @@ def transfer_verify(request):
 
     # Send SMS to sender
     # Save verification number
-    
+
     return Response({'message': 'Transferred successfully'})
