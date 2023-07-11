@@ -30,7 +30,7 @@ SECRET_KEY = 'django-insecure-o&g*@%0*g-^#-dd+l*73w9j7^7^e8vtl3b)-&_$#s+^=r@h!%r
 DEBUG = True
 ALLOWED_HOSTS = ['i.gozle.com.tm']
 CSRF_TRUSTED_ORIGINS = ['https://i.gozle.com.tm']
-CORS_ALLOWED_ORIGINS = ['https://id.gozle.com.tm']
+#CORS_ALLOWED_ORIGINS = ['https://id.gozle.com.tm']
 CORS_ALLOW_ALL_ORIGINS = False
 CORS_ALLOW_CREDENTIALS = True
 # Application definition
