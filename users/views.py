@@ -451,11 +451,13 @@ def transfer_verify(request):
     return Response({'message': 'Transferred successfully'})
 
 
+@api_view(["GET"])
+@csrf_exempt
 def logins(request):
     if request.user.is_anonymous:
         return Response({'detail': "Authentication credentials were not provided."}, status=status.HTTP_403_FORBIDDEN)
 
-    objects = request.user.logins
+    objects = request.user.logins.all()
 
     serializer = LoginSerializer(objects, many=True)
     return Response(serializer.data)
