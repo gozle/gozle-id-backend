@@ -172,8 +172,8 @@ def forgetPassword(request, action):
         if user.verification and user.verification.type == "email" and user.verification.code == code:
             password = request.POST.get("password")
             user.set_password(password)
+            user.save()
             return Response({"message": 'Password set successfully'})
-            Verification.objects.get(id=user.verification.id).delete()
 
         return Response({'status': False, 'Error': 'Invalid Code'}, status=status.HTTP_401_UNAUTHORIZED)
 
