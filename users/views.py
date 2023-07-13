@@ -34,6 +34,7 @@ import requests
 
 def get_client_ip(request):
     x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    print(request.eaders)
     print(x_forwarded_for)
     print(request.META.get('REMOTE_ADDR'))
     print(request.META.get('HTTP_X_REAL_IP'))
