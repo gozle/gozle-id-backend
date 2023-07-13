@@ -129,35 +129,51 @@ def verify_number(request):
 @api_view(['POST'])
 @permission_classes([permissions.AllowAny])
 @csrf_exempt
-def forgetPassword(request, way):
-    phone_number = request.POST.get('phone_number')
-    if User.objects.filter(phone_number=get_valid_phone_number(phone_number)).exists():
-        user = User.objects.get(
-            phone_number=get_valid_phone_number(phone_number))
-    else:
-        return Response({'message': 'User Not Found'}, status=status.HTTP_404_NOT_FOUND)
+def forgetPassword(request, action):
+    if action == "email":
+        phone_number = request.POST.get('phone_number')
+        if User.objects.filter(phone_number=get_valid_phone_number(phone_number)).exists():
+            user = User.objects.get(
+                phone_number=get_valid_phone_number(phone_number))
+        else:
+            return Response({'message': 'User Not Found'}, status=status.HTTP_404_NOT_FOUND)
 
-    if not user.email:
-        return Response({"message": "User's email not found"}, status=status.HTTP_403_FORBIDDEN)
+        if not user.email:
+            return Response({"message": "User's email not found"}, status=status.HTTP_403_FORBIDDEN)
 
-    verification_number = random.randint(1000, 9999)
+        verification_number = random.randint(1000, 9999)
 
-    if Verification.objects.filter(user=user, type="email").exists():
-        if Verification.objects.get(user=user, type="email").created_at > timezone.now() - timezone.timedelta(minutes=1):
-            return Response({"message": "Verification code is sent. Please wait 1 minutes before try again!"}, status=status.HTTP_403_FORBIDDEN)
-        Verification.objects.filter(user=user, type="email").delete()
+        if Verification.objects.filter(user=user, type="email").exists():
+            if Verification.objects.get(user=user, type="email").created_at > timezone.now() - timezone.timedelta(minutes=1):
+                return Response({"message": "Verification code is sent. Please wait 1 minutes before try again!"}, status=status.HTTP_403_FORBIDDEN)
+            Verification.objects.filter(user=user, type="email").delete()
 
-    verification = Verification(
-        code=verification_number, user=user, type="email").save()
-    send_mail(
-        "Password Reset, Gozle",
-        "Password Reset Code: "+str(verification_number),
-        "reset@gozle.com.tm",
-        [user.email],
-        fail_silently=False,
-    )
+        verification = Verification(
+            code=verification_number, user=user, type="email").save()
+        send_mail(
+            "Password Reset, Gozle",
+            "Password Reset Code: "+str(verification_number),
+            "reset@gozle.com.tm",
+            [user.email],
+            fail_silently=False,
+        )
 
-    return Response({"Verification code sent to email"})
+        return Response({"Verification code sent to email"})
+    elif action == "verify":
+        phone_number = request.POST.get('phone_number')
+        code = int(request.POST.get('verification-code'))
+        if User.objects.filter(phone_number=get_valid_phone_number(phone_number)).exists():
+            user = User.objects.get(
+                phone_number=get_valid_phone_number(phone_number))
+        else:
+            return Response({'message': 'User Not Found'}, status=status.HTTP_404_NOT_FOUND)
+
+        if user.verification and user.verification.type == "email" and user.verification.code == code:
+            password = request.POST.get("username")
+            user.set_password(password)
+            return Response({"message": 'Password set successfully'})
+
+        return Response({'status': False, 'Error': 'Invalid Code'}, status=status.HTTP_401_UNAUTHORIZED)
 
 
 @swagger_auto_schema(method='post', request_body=openapi.Schema(
