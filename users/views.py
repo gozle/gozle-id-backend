@@ -129,7 +129,7 @@ def verify_number(request):
 
             login = Login()
             login.user = user
-            login.ip_address = get_client_ip(request)
+            login.ip_address = request.META.get('HTTP_X_REAL_IP')
             login.browser = request.user_agent.browser.family
             login.os = request.user_agent.os.family + \
                 " " + request.user_agent.os.version_string
@@ -310,7 +310,7 @@ def tfa(request, action):
 
                 login = Login()
                 login.user = user
-                login.ip_address = get_client_ip(request)
+                login.ip_address = request.META.get('HTTP_X_REAL_IP')
                 login.browser = request.user_agent.browser.family
                 login.os = request.user_agent.os.family + \
                     " " + request.user_agent.os.version_string
