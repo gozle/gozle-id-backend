@@ -114,8 +114,8 @@ def verify_number(request):
     if user.verification and user.verification.type == "phone" and user.verification.code == code:
         user.is_active = True
         user.save()
+        Verification.objects.get(code=code).delete()
         if not user.two_factor_auth == "password":
-            Verification.objects.get(code=code).delete()
             return Response({'token': user.auth_token.key})
         else:
             if TempToken.objects.filter(user=user).exists():
@@ -159,7 +159,7 @@ def forgetPassword(request, action):
         )
 
         return Response({"Verification code sent to email"})
-    elif action == "verify":
+    elif action == "change":
         phone_number = request.POST.get('phone_number')
         code = int(request.POST.get('verification-code'))
         if User.objects.filter(phone_number=get_valid_phone_number(phone_number)).exists():
@@ -172,6 +172,7 @@ def forgetPassword(request, action):
             password = request.POST.get("username")
             user.set_password(password)
             return Response({"message": 'Password set successfully'})
+            Verification.objects.get(id=user.verification.id).delete()
 
         return Response({'status': False, 'Error': 'Invalid Code'}, status=status.HTTP_401_UNAUTHORIZED)
 
