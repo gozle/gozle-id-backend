@@ -169,7 +169,7 @@ def forgetPassword(request, action):
             return Response({'message': 'User Not Found'}, status=status.HTTP_404_NOT_FOUND)
 
         if user.verification and user.verification.type == "email" and user.verification.code == code:
-            password = request.POST.get("username")
+            password = request.POST.get("password")
             user.set_password(password)
             return Response({"message": 'Password set successfully'})
             Verification.objects.get(id=user.verification.id).delete()
