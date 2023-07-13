@@ -54,18 +54,21 @@ class User(AbstractUser):
     last_name = models.CharField(max_length=100, validators=[validate_names])
     birthday = models.DateField(null=True, blank=True)
     balance = models.IntegerField(default=0, blank=True)
-    # unique=True) # validators=[validate_value(field='ip')])
+
     ip_address = models.CharField(max_length=400, blank=True, null=True)
-    # unique=True) # validators=[self.validate_value(field='mac')])
     mac_address = models.CharField(max_length=400, blank=True, null=True)
+
     phone_number = models.CharField(
         max_length=30, unique=True, validators=[validate_phone_number])
+    email = models.TextField(blank=True, null=True)
     device_info = models.CharField(max_length=400, null=True, blank=True)
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     avatar = models.ImageField(
         upload_to='avatars/%d', default='default/default_avatar.jpg', blank=True, null=True)
-    two_factor_auth = models.BooleanField(default=False, blank=True)
+    two_factor_auth = models.CharField(
+        max_length=20, default='none', blank=True)
 
     def __str__(self):
         return str(self.username)
@@ -82,6 +85,7 @@ class Verification(models.Model):
     code = models.IntegerField()
     user = models.OneToOneField(
         User, on_delete=models.CASCADE, related_name='verification')
+    type = models.CharField(max_length=10, default="phone", blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
