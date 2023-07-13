@@ -9,7 +9,8 @@ https://docs.djangoproject.com/en/4.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
-import datetime, os
+import datetime
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -46,14 +47,16 @@ INSTALLED_APPS = [
     'drf_yasg',
     'rest_framework',
     'rest_framework.authtoken',
-#    'django_xmlrpc',
+    #    'django_xmlrpc',
     'modernrpc',
     'corsheaders',
-    'oauth2_provider'
+    'oauth2_provider',
+    'django_user_agents',
 ]
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
+    'django_user_agents.middleware.UserAgentMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -92,11 +95,11 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'gozle_account',
         'USER': 'account',
-        'PASSWORD':'Ajf0hfasi1bifabfkja_901_f-1',
-        'HOST':'172.16.1.227',
-        'PORT':'',
-        'OPTIONS':{
-                'init_command':"SET sql_mode='STRICT_TRANS_TABLES'"}
+        'PASSWORD': 'Ajf0hfasi1bifabfkja_901_f-1',
+        'HOST': '172.16.1.227',
+        'PORT': '',
+        'OPTIONS': {
+                'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"}
     }
 }
 
@@ -171,14 +174,15 @@ REST_FRAMEWORK = {
     ),
 }
 
+USER_AGENTS_CACHE = None
 
 MODERNRPC_METHODS_MODULES = [
     'users.user_service'
 ]
 
-#LOGIN_URL = '/api/admin/login'
+# LOGIN_URL = '/api/admin/login'
 
-#JWT_AUTH = { 
+# JWT_AUTH = {
 #    'JWT_AUTH_HEADER_PREFIX': 'JWT',
 #    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=300)
-#}
+# }
