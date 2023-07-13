@@ -34,6 +34,9 @@ import requests
 
 def get_client_ip(request):
     x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    print(x_forwarded_for)
+    print(request.META.get('REMOTE_ADDR'))
+    print(request.META.get('HTTP_X_REAL_IP'))
     if x_forwarded_for:
         ip = x_forwarded_for.split(',')[0]
     else:
@@ -129,7 +132,7 @@ def verify_number(request):
 
             login = Login()
             login.user = user
-            login.ip_address = request.META.get('HTTP_X_REAL_IP')
+            login.ip_address = get_client_ip(request)
             login.browser = request.user_agent.browser.family
             login.os = request.user_agent.os.family + \
                 " " + request.user_agent.os.version_string
