@@ -77,6 +77,7 @@ def sign_up(request):
             if Verification.objects.get(user=user, type='phone').created_at > timezone.now() - timezone.timedelta(minutes=1):
                 return Response({"message": "Verification code is sent. Please wait 1 minutes before try again!"}, status=status.HTTP_403_FORBIDDEN)
             Verification.objects.filter(user=user, type='phone').delete()
+        Verification.objects.filter(user=user).delete()
         verification = Verification(code=verification_number, user=user).save()
 
         sms_sender.send(phone_number, 'Gozle ID code: ' +
