@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth import authenticate
-from users.models import User
+from users.models import Login, User
 
 DOMAIN = 'https://i.gozle.com.tm'
 
@@ -17,3 +17,10 @@ class UserSerializer(serializers.ModelSerializer):
         if obj.avatar:
             return DOMAIN + obj.avatar.url
         return None
+
+
+class LoginSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Login
+        fields = ['id', "ip_address", "browser", "os", "device", "created_at"]

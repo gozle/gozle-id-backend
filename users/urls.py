@@ -1,7 +1,7 @@
 from django.urls import path
 # from users.user_service import UserService
 
-from users.views import forgetPassword, sign_up, update, verify_number, get_user, tfa
+from users.views import forgetPassword, logins, sign_up, update, verify_number, get_user, tfa
 from users.views import register_order, order_status, get_user_server
 from users.views import transfer_request, transfer_verify
 
@@ -16,6 +16,7 @@ urlpatterns = [
     path('order/status', order_status),
     path('transfer/request', transfer_request),
     path('transfer/verify', transfer_verify),
-    path('forget-password/<str:action>', forgetPassword)
+    path('forget-password/<str:action>', forgetPassword),
+    path('login-history', logins)
     #    path('rpc/user_service/', UserService.as_view())
 ]

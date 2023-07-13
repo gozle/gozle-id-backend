@@ -82,7 +82,8 @@ class User(AbstractUser):
 
 
 class Login(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="logins")
     ip_address = models.CharField(max_length=40, null=True, blank=True)
     browser = models.CharField(max_length=100, null=True, blank=True)
     os = models.CharField(max_length=100, null=True, blank=True)
