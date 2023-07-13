@@ -81,6 +81,19 @@ class User(AbstractUser):
         super(User, self).save(*args, **kwargs)
 
 
+class Login(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    ip_address = models.CharField(max_length=40, null=True, blank=True)
+    browser = models.CharField(max_length=100, null=True, blank=True)
+    os = models.CharField(max_length=100, null=True, blank=True)
+    device = models.CharField(max_length=100, null=True, blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return str(self.user.username)
+
+
 class Verification(models.Model):
     code = models.IntegerField()
     user = models.OneToOneField(

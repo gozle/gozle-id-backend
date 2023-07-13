@@ -7,7 +7,7 @@ from django.utils.crypto import get_random_string
 from django.conf import settings
 from django.core.mail import send_mail
 
-from users.models import Order, Transfer, User, Verification, TempUser, get_valid_phone_number, TempToken
+from users.models import Login, Order, Transfer, User, Verification, TempUser, get_valid_phone_number, TempToken
 from users.serializers import UserSerializer
 
 from .forms import CustomUserCreationForm
@@ -30,6 +30,15 @@ from rest_framework.authtoken.models import Token
 import random
 import requests
 # Create your views here.
+
+
+def get_client_ip(request):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    return ip
 
 ################# SIGN-UP ############################
 
@@ -117,6 +126,16 @@ def verify_number(request):
         user.save()
         Verification.objects.get(code=code).delete()
         if not user.two_factor_auth == "password":
+
+            login = Login()
+            login.user = user
+            login.ip_address = get_client_ip(request)
+            login.browser = request.user_agent.browser.family
+            login.os = request.user_agent.os.family + \
+                " " + request.user_agent.os.version_string
+            login.device = request.user_agent.device.family
+            login.save()
+
             return Response({'token': user.auth_token.key})
         else:
             if TempToken.objects.filter(user=user).exists():
@@ -288,6 +307,16 @@ def tfa(request, action):
             user = TempToken.objects.get(token=token).user
             auth = authenticate(username=user.username, password=password)
             if auth is not None:
+
+                login = Login()
+                login.user = user
+                login.ip_address = get_client_ip(request)
+                login.browser = request.user_agent.browser.family
+                login.os = request.user_agent.os.family + \
+                    " " + request.user_agent.os.version_string
+                login.device = request.user_agent.device.family
+                login.save()
+
                 response = {"token": user.auth_token.key}
                 TempToken.objects.get(token=token).delete()
                 return Response(response)
