@@ -73,7 +73,7 @@ def sign_up(request):
 
         phone_number = user.phone_number
         verification_number = random.randint(1000, 9999)
-        if Verification.objects.filter(user=user, type='phone').exists():
+        if Verification.objects.filter(user=user).exists():
             if Verification.objects.get(user=user, type='phone').created_at > timezone.now() - timezone.timedelta(minutes=1):
                 return Response({"message": "Verification code is sent. Please wait 1 minutes before try again!"}, status=status.HTTP_403_FORBIDDEN)
             Verification.objects.filter(user=user, type='phone').delete()
