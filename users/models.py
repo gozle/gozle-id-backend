@@ -89,7 +89,7 @@ class Verification(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.code
+        return str(self.code)
 
 
 class TempUser(models.Model):
