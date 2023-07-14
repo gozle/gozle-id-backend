@@ -127,6 +127,18 @@ def verify_number(request):
             login.device = request.user_agent.device.family
             login.save()
 
+            date = login.created_at.date()
+            time = login.created_at.time()
+
+            sms_sender.send(user.phone_number, """
+{}/{}/{} sagat {}:{}-da "Gozle ID" hasabyňyza girildi.
+
+Enjam: {}
+IP: {}
+
+Eger siz däl bolsaňyz, Gozle ID hasabyňyza giriň we parolyňyzy üýtgediň
+                            """.format(date.day, date.month, date.year, time.hour, time.minute, login.os, login.ip_address))
+
             return Response({'token': user.auth_token.key})
         else:
             if TempToken.objects.filter(user=user).exists():
