@@ -195,3 +195,12 @@ class GiftCard(models.Model):
             self.image.save(self.code+'.jpg', File(temp_file))
 
         super().save(*args, **kwargs)
+
+
+class CoinHistory(models.Model):
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="history")
+    amount = models.IntegerField()
+    source = models.CharField(max_length=20)
+
+    created_at = models.DateTimeField(auto_now_add=True)
