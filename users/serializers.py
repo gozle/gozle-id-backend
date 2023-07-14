@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth import authenticate
-from users.models import Login, User
+from users.models import CoinHistory, Login, User
 
 DOMAIN = 'https://i.gozle.com.tm'
 
@@ -20,7 +20,12 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class LoginSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Login
         fields = ['id', "ip_address", "browser", "os", "device", "created_at"]
+
+
+class HistorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CoinHistory
+        fields = "__all__"

@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .forms import CustomUserCreationForm, CustomUserChangeForm
+from .forms import CustomUserCreationForm, CustomUserChangeForm, GiftCardForm
 from .models import GiftCard, Login, User, Verification
 
 
@@ -11,7 +11,13 @@ class CustomUserAdmin(admin.ModelAdmin):
     search_fields = ["username", "phone_number"]
 
 
+class GiftCardAdmin(admin.ModelAdmin):
+    form = GiftCardForm
+    model = GiftCard
+    list_filter = ["used", "image"]
+
+
 admin.site.register(User, CustomUserAdmin)
 admin.site.register(Verification)
-admin.site.register(GiftCard)
+admin.site.register(GiftCard, GiftCardAdmin)
 admin.site.register(Login)

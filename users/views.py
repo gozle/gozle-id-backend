@@ -7,8 +7,8 @@ from django.utils.crypto import get_random_string
 from django.conf import settings
 from django.core.mail import send_mail
 
-from users.models import Login, Order, Transfer, User, Verification, TempUser, get_valid_phone_number, TempToken
-from users.serializers import LoginSerializer, UserSerializer
+from users.models import CoinHistory, GiftCard, Login, Order, Transfer, User, Verification, TempUser, get_valid_phone_number, TempToken
+from users.serializers import HistorySerializer, LoginSerializer, UserSerializer
 
 from .forms import CustomUserCreationForm
 
@@ -433,6 +433,12 @@ def transfer_verify(request):
     receiver.balance += transfer.amount
     receiver.save()
 
+    history = CoinHistory()
+    history.user = receiver
+    history.amount = transfer.amount
+    history.source = user.phone_number
+    history.save()
+
     transfer.completed = True
     transfer.save()
 
@@ -442,13 +448,47 @@ def transfer_verify(request):
     return Response({'message': 'Transferred successfully'})
 
 
-@api_view(["GET"])
+@api_view(["POST"])
 @csrf_exempt
-def logins(request):
+def enterCard(request):
+    if request.user.is_anonymous:
+        return Response({'detail': "Authentication credentials were not provided."}, status=status.HTTP_403_FORBIDDEN)
+    code = request.POST.get("code")
+
+    if not GiftCard.objects.filter(code=code).exists():
+        return Response({"message": "Invalid Code"}, status=status.HTTP_403_FORBIDDEN)
+
+    card = GiftCard.objects.get(code=code)
+
+    user = request.user
+    user.balance += card.value
+    card.used = True
+
+    card.save()
+    user.save()
+
+    history = CoinHistory()
+    history.user = user
+    history.amount = card.value
+    history.source = "GiftCard"
+    history.save()
+
+    return Response({"message": "Successfully accepted card"})
+
+
+@api_view(["POST"])
+@csrf_exempt
+def history(request, action):
     if request.user.is_anonymous:
         return Response({'detail': "Authentication credentials were not provided."}, status=status.HTTP_403_FORBIDDEN)
 
-    objects = request.user.logins.all()
+    if action == "login":
+        objects = request.user.logins.all()
 
-    serializer = LoginSerializer(objects, many=True)
-    return Response(serializer.data)
+        serializer = LoginSerializer(objects, many=True)
+        return Response(serializer.data)
+    elif action == "received":
+        objects = request.user.history.all()
+
+        serializer = HistorySerializer(objects, many=True)
+        return Response(serializer.data)
