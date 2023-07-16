@@ -1,37 +1,30 @@
-from django.http import HttpResponse, HttpResponseRedirect
-from django.contrib.auth import authenticate, login
-from django.views.decorators.csrf import csrf_exempt
+import random
+
+import pytz
+import requests
+from django.conf import settings
+from django.contrib.auth import authenticate
 from django.core.mail import send_mail
 from django.utils import timezone
 from django.utils.crypto import get_random_string
-from django.conf import settings
-from django.core.mail import send_mail
-
-from users.models import CoinHistory, GiftCard, Login, Order, Transfer, User, Verification, TempUser, get_valid_phone_number, TempToken
-from users.serializers import HistorySerializer, LoginSerializer, UserSerializer
-
-from .forms import CustomUserCreationForm
-
-from sms import sms_sender
-
-import xml.etree.ElementTree as ET
-
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.response import Response
-from rest_framework import status
-
+from django.views.decorators.csrf import csrf_exempt
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
-
 from rest_framework import permissions
-from rest_framework import views
+from rest_framework import status
 from rest_framework.authtoken.models import Token
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.response import Response
 
-import random
-import requests
+from sms import sms_sender
+from users.models import CoinHistory, GiftCard, Login, Order, Transfer, User, Verification, get_valid_phone_number, \
+    TempToken
+from users.serializers import HistorySerializer, LoginSerializer, UserSerializer
+
+
 # Create your views here.
 
-################# SIGN-UP ############################
+# SIGN-UP ############################
 
 
 @swagger_auto_schema(method='post', request_body=openapi.Schema(
@@ -62,7 +55,6 @@ def sign_up(request):
     if phone_number != '':
         if User.objects.filter(phone_number=phone_number).exists():
             user = User.objects.get(phone_number=phone_number)
-#            return Response({'message': 'User with this phone number already exists'}, status=status.HTTP_403_FORBIDDEN)
         else:
             user = User()
             random_username = random.randint(10000000, 1000000000)
@@ -74,8 +66,10 @@ def sign_up(request):
         phone_number = user.phone_number
         verification_number = random.randint(1000, 9999)
         if Verification.objects.filter(user=user, type="phone").exists():
-            if Verification.objects.get(user=user, type='phone').created_at > timezone.now() - timezone.timedelta(minutes=1):
-                return Response({"message": "Verification code is sent. Please wait 1 minutes before try again!"}, status=status.HTTP_403_FORBIDDEN)
+            if Verification.objects.get(user=user, type='phone').created_at > timezone.now() - timezone.timedelta(
+                    minutes=1):
+                return Response({"message": "Verification code is sent. Please wait 1 minutes before try again!"},
+                                status=status.HTTP_403_FORBIDDEN)
             Verification.objects.filter(user=user, type='phone').delete()
         Verification.objects.filter(user=user).delete()
         verification = Verification(code=verification_number, user=user).save()
@@ -123,12 +117,14 @@ def verify_number(request):
             login.ip_address = request.META.get('HTTP_X_REAL_IP')
             login.browser = request.user_agent.browser.family
             login.os = request.user_agent.os.family + \
-                " " + request.user_agent.os.version_string
+                       " " + request.user_agent.os.version_string
             login.device = request.user_agent.device.family
             login.save()
 
-            date = login.created_at.date()
-            time = login.created_at.time()
+            date = login.created_at.astimezone(
+                pytz.timezone("Asia/Ashgabat")).date()
+            time = login.created_at.astimezone(
+                pytz.timezone("As sozleria/Ashgabat")).time()
 
             sms_sender.send(user.phone_number, """
 {}/{}/{} sagat {}:{}-da "Gozle ID" hasabyňyza girildi.
@@ -137,7 +133,8 @@ Enjam: {}
 IP: {}
 
 Eger siz däl bolsaňyz, Gozle ID hasabyňyza giriň we parolyňyzy üýtgediň
-                            """.format(date.day, date.month, date.year, time.hour, time.minute, login.os, login.ip_address))
+                            """.format(date.day, date.month, date.year, time.hour, time.minute, login.os,
+                                       login.ip_address))
 
             return Response({'token': user.auth_token.key})
         else:
@@ -167,21 +164,23 @@ def forgetPassword(request, action):
         verification_number = random.randint(1000, 9999)
 
         if Verification.objects.filter(user=user, type="email").exists():
-            if Verification.objects.get(user=user, type="email").created_at > timezone.now() - timezone.timedelta(minutes=1):
-                return Response({"message": "Verification code is sent. Please wait 1 minutes before try again!"}, status=status.HTTP_403_FORBIDDEN)
+            if Verification.objects.get(user=user, type="email").created_at > timezone.now() - timezone.timedelta(
+                    minutes=1):
+                return Response({"message": "Verification code is sent. Please wait 1 minutes before try again!"},
+                                status=status.HTTP_403_FORBIDDEN)
             Verification.objects.filter(user=user, type="email").delete()
 
         verification = Verification(
             code=verification_number, user=user, type="email").save()
         send_mail(
             "Password Reset, Gozle",
-            "Password Reset Code: "+str(verification_number),
+            "Password Reset Code: " + str(verification_number),
             "reset@gozle.com.tm",
             [user.email],
             fail_silently=False,
         )
 
-        return Response({"Verification code sent to email"})
+        return Response({"message": "Verification code sent to email"})
     elif action == "change":
         phone_number = request.POST.get('phone_number')
         code = int(request.POST.get('verification-code'))
@@ -272,7 +271,8 @@ def tfa(request, action):
     if action == 'activate':
         # get the user and get the password from the request data
         if request.user.is_anonymous:
-            return Response({'detail': "Authentication credentials were not provided."}, status=status.HTTP_403_FORBIDDEN)
+            return Response({'detail': "Authentication credentials were not provided."},
+                            status=status.HTTP_403_FORBIDDEN)
         user = request.user
         password = request.POST.get('password')
         question = request.POST.get('question')
@@ -289,7 +289,8 @@ def tfa(request, action):
 
     elif action == 'deactivate':
         if request.user.is_anonymous:
-            return Response({'detail': "Authentication credentials were not provided."}, status=status.HTTP_403_FORBIDDEN)
+            return Response({'detail': "Authentication credentials were not provided."},
+                            status=status.HTTP_403_FORBIDDEN)
         user = request.user
         user.two_factor_auth = "none"
         user.save()
@@ -298,7 +299,8 @@ def tfa(request, action):
     elif action == 'check':
         #        print(request.user)
         if request.user.is_anonymous:
-            return Response({'detail': "Authentication credentials were not provided."}, status=status.HTTP_403_FORBIDDEN)
+            return Response({'detail': "Authentication credentials were not provided."},
+                            status=status.HTTP_403_FORBIDDEN)
         user = request.user
         return Response({'2fa': user.two_factor_auth})
 
@@ -316,7 +318,7 @@ def tfa(request, action):
                 login.ip_address = request.META.get('HTTP_X_REAL_IP')
                 login.browser = request.user_agent.browser.family
                 login.os = request.user_agent.os.family + \
-                    " " + request.user_agent.os.version_string
+                           " " + request.user_agent.os.version_string
                 login.device = request.user_agent.device.family
                 login.save()
 
@@ -337,7 +339,7 @@ def register_order(request):
     if request.user.is_anonymous:
         return Response({'detail': "Authentication credentials were not provided."}, status=status.HTTP_403_FORBIDDEN)
 
-    description = request.POST.get('description')
+    description = ""
     amount = request.POST.get('amount')
     returnUrl = request.POST.get('returnUrl')
     failUrl = request.POST.get('failUrl')
@@ -366,6 +368,8 @@ def register_order(request):
 
     response_data = response.json()
     order.order_id = response_data['orderId']
+    order.save()
+
     return Response(response_data)
 
 
@@ -504,3 +508,4 @@ def history(request, action):
 
         serializer = HistorySerializer(objects, many=True)
         return Response(serializer.data)
+

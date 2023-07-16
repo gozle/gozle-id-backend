@@ -42,6 +42,7 @@ urlpatterns = [
     path('o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
     path('accounts/', include('django.contrib.auth.urls')),
     path('api/auth/', include('users.urls')),
+    path('new/api/', include('users.new.urls')),
     path('api/admin/', admin.site.urls),
     path('api/rpc/', RPCEntryPoint.as_view()),
     path('api/swagger<format>/', schema_view.without_ui(cache_timeout=0),
