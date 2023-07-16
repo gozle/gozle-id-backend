@@ -80,9 +80,9 @@ def verify_number(request):
             loginModel.device = request.user_agent.device.family
             loginModel.save()
 
-            date = login.created_at.astimezone(
+            date = loginModel.created_at.astimezone(
                 pytz.timezone("Asia/Ashgabat")).date()
-            time = login.created_at.astimezone(
+            time = loginModel.created_at.astimezone(
                 pytz.timezone("Asia/Ashgabat")).time()
 
             sms_sender.send(user.phone_number, """
