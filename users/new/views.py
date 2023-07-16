@@ -14,6 +14,7 @@ from django.contrib.auth import authenticate, login
 
 
 @api_view(['POST'])
+@permission_classes([permissions.AllowAny])
 @csrf_exempt
 def signup(request):
     phone_number = get_valid_phone_number(request.POST.get('phone_number'))
