@@ -135,7 +135,7 @@ def verify_number(request):
             date = login_object.created_at.astimezone(
                 pytz.timezone("Asia/Ashgabat")).date()
             time = login_object.created_at.astimezone(
-                pytz.timezone("As sozleria/Ashgabat")).time()
+                pytz.timezone("Asia/Ashgabat")).time()
 
             sms_sender.send(user.phone_number, """
 {}/{}/{} sagat {}:{}-da "Gozle ID" hasabyňyza girildi.
