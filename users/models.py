@@ -60,6 +60,7 @@ class User(AbstractUser):
 
     phone_number = models.CharField(
         max_length=30, unique=True, validators=[validate_phone_number])
+    reserve_phone_number = models.CharField(max_length=30, validators=[validate_phone_number])
     email = models.TextField(blank=True, null=True)
     device_info = models.CharField(max_length=400, null=True, blank=True)
 

@@ -3,8 +3,9 @@ import random
 import pytz
 import requests
 from django.conf import settings
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, login
 from django.core.mail import send_mail
+from django.db import transaction
 from django.utils import timezone
 from django.utils.crypto import get_random_string
 from django.views.decorators.csrf import csrf_exempt
@@ -112,18 +113,18 @@ def verify_number(request):
         Verification.objects.get(code=code).delete()
         if not user.two_factor_auth == "password":
 
-            login = Login()
-            login.user = user
-            login.ip_address = request.META.get('HTTP_X_REAL_IP')
-            login.browser = request.user_agent.browser.family
-            login.os = request.user_agent.os.family + \
-                       " " + request.user_agent.os.version_string
-            login.device = request.user_agent.device.family
-            login.save()
+            login_object = Login()
+            login_object.user = user
+            login_object.ip_address = request.META.get('HTTP_X_REAL_IP')
+            login_object.browser = request.user_agent.browser.family
+            login_object.os = request.user_agent.os.family + \
+                              " " + request.user_agent.os.version_string
+            login_object.device = request.user_agent.device.family
+            login_object.save()
 
-            date = login.created_at.astimezone(
+            date = login_object.created_at.astimezone(
                 pytz.timezone("Asia/Ashgabat")).date()
-            time = login.created_at.astimezone(
+            time = login_object.created_at.astimezone(
                 pytz.timezone("As sozleria/Ashgabat")).time()
 
             sms_sender.send(user.phone_number, """
@@ -133,10 +134,11 @@ Enjam: {}
 IP: {}
 
 Eger siz däl bolsaňyz, Gozle ID hasabyňyza giriň we parolyňyzy üýtgediň
-                            """.format(date.day, date.month, date.year, time.hour, time.minute, login.os,
-                                       login.ip_address))
+                            """.format(date.day, date.month, date.year, time.hour, time.minute, login_object.os,
+                                       login_object.ip_address))
 
-            return Response({'token': user.auth_token.key})
+            login(request, user)
+            return Response({"message": 'Login Successfull'})
         else:
             if TempToken.objects.filter(user=user).exists():
                 TempToken.objects.filter(user=user).delete()
@@ -225,6 +227,8 @@ def update(request):
         'birthday') else user.birthday
     user.email = request.POST.get(
         'email') if request.POST.get('email') else user.email
+    user.reserve_phone_number = request.POST.get("reserve_phone_number") if request.POST.get(
+        "reserve_phone_number") else user.reserve_phone_number
     user.avatar = request.FILES.get(
         'avatar') if request.FILES.get('avatar') else user.avatar
 
@@ -313,18 +317,18 @@ def tfa(request, action):
             auth = authenticate(username=user.username, password=password)
             if auth is not None:
 
-                login = Login()
-                login.user = user
-                login.ip_address = request.META.get('HTTP_X_REAL_IP')
-                login.browser = request.user_agent.browser.family
-                login.os = request.user_agent.os.family + \
-                           " " + request.user_agent.os.version_string
-                login.device = request.user_agent.device.family
-                login.save()
+                login_object = Login()
+                login_object.user = user
+                login_object.ip_address = request.META.get('HTTP_X_REAL_IP')
+                login_object.browser = request.user_agent.browser.family
+                login_object.os = request.user_agent.os.family + \
+                                  " " + request.user_agent.os.version_string
+                login_object.device = request.user_agent.device.family
+                login_object.save()
 
-                response = {"token": user.auth_token.key}
                 TempToken.objects.get(token=token).delete()
-                return Response(response)
+                login(request, user)
+                return Response({"message": 'Login Successfull'})
             else:
                 return Response({'message': 'Password is wrong!'}, status=status.HTTP_401_UNAUTHORIZED)
         else:
@@ -465,6 +469,7 @@ def transfer_verify(request):
 
 
 @api_view(["POST"])
+@transaction.atomic
 @csrf_exempt
 def enterCard(request):
     if request.user.is_anonymous:
@@ -489,7 +494,7 @@ def enterCard(request):
     history.source = "GiftCard"
     history.save()
 
-    return Response({"message": "Successfully accepted card"})
+    return Response({"message": "Successfully accepted card", "amount": card.value})
 
 
 @api_view(["POST"])
