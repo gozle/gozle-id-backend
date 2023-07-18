@@ -180,7 +180,7 @@ REST_FRAMEWORK = {
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": datetime.timedelta(minutes=5),
     "REFRESH_TOKEN_LIFETIME": datetime.timedelta(days=15),
-    "AUTH_HEADER_TYPES": ("JWT",),
+    "AUTH_HEADER_TYPES": ("Token",),
 }
 USER_AGENTS_CACHE = None
 
