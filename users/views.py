@@ -506,7 +506,7 @@ def enterCard(request):
     history.source = "GiftCard"
     history.save()
 
-    return Response({"message": "Successfully accepted card", "amount": card.value})
+    return Response({"amount": card.value})
 
 
 @api_view(["POST"])
