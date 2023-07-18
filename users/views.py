@@ -338,8 +338,9 @@ def tfa(request, action):
                 login_object.save()
 
                 TempToken.objects.get(token=token).delete()
-                login(request, user)
-                return Response({"message": 'Login Successfull'})
+                # login(request, user)
+                tokens = get_tokens_for_user(user)
+                return Response(tokens)
             else:
                 return Response({'message': 'Password is wrong!'}, status=status.HTTP_401_UNAUTHORIZED)
         else:
