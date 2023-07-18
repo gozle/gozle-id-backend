@@ -21,6 +21,16 @@ from sms import sms_sender
 from users.models import CoinHistory, GiftCard, Login, Order, Transfer, User, Verification, get_valid_phone_number, \
     TempToken
 from users.serializers import HistorySerializer, LoginSerializer, UserSerializer
+from rest_framework_simplejwt.tokens import RefreshToken
+
+
+def get_tokens_for_user(user):
+    refresh = RefreshToken.for_user(user)
+
+    return {
+        'refresh': str(refresh),
+        'access': str(refresh.access_token),
+    }
 
 
 # Create your views here.
@@ -137,8 +147,9 @@ Eger siz däl bolsaňyz, Gozle ID hasabyňyza giriň we parolyňyzy üýtgediň
                             """.format(date.day, date.month, date.year, time.hour, time.minute, login_object.os,
                                        login_object.ip_address))
 
-            login(request, user)
-            return Response({"message": 'Login Successfull'})
+            # login(request, user)
+            tokens = get_tokens_for_user(user)
+            return Response({tokens})
         else:
             if TempToken.objects.filter(user=user).exists():
                 TempToken.objects.filter(user=user).delete()
@@ -513,4 +524,3 @@ def history(request, action):
 
         serializer = HistorySerializer(objects, many=True)
         return Response(serializer.data)
-
