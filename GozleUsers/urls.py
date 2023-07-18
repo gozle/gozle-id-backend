@@ -22,6 +22,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from modernrpc.views import RPCEntryPoint
 from django.views.static import serve
+from rest_framework_simplejwt.views import TokenRefreshView, TokenVerifyView
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -38,17 +39,19 @@ schema_view = get_schema_view(
 
 
 urlpatterns = [
-    re_path(r'^api/media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
-    path('o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
-    path('accounts/', include('django.contrib.auth.urls')),
-    path('api/auth/', include('users.urls')),
-    path('new/api/', include('users.new.urls')),
-    path('api/admin/', admin.site.urls),
-    path('api/rpc/', RPCEntryPoint.as_view()),
-    path('api/swagger<format>/', schema_view.without_ui(cache_timeout=0),
-         name='schema-json'),
-    path('swagger/', schema_view.with_ui('swagger',
-         cache_timeout=0), name='schema-swagger-ui'),
-    path('api/redoc/', schema_view.with_ui('redoc',
-         cache_timeout=0), name='schema-redoc'),
-] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+                  re_path(r'^api/media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
+                  path('o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
+                  path('accounts/', include('django.contrib.auth.urls')),
+                  path('api/auth/', include('users.urls')),
+                  path('new/api/', include('users.new.urls')),
+                  path('api/token/refresh/', TokenRefreshView.as_view()),
+                  path('api/token/verify/', TokenVerifyView.as_view()),
+                  path('api/admin/', admin.site.urls),
+                  path('api/rpc/', RPCEntryPoint.as_view()),
+                  path('api/swagger<format>/', schema_view.without_ui(cache_timeout=0),
+                       name='schema-json'),
+                  path('swagger/', schema_view.with_ui('swagger',
+                                                       cache_timeout=0), name='schema-swagger-ui'),
+                  path('api/redoc/', schema_view.with_ui('redoc',
+                                                         cache_timeout=0), name='schema-redoc'),
+              ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

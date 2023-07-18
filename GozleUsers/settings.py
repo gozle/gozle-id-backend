@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'oauth2_provider',
     'django_user_agents',
+    'rest_framework_simplejwt',
 ]
 
 MIDDLEWARE = [
@@ -166,6 +167,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 REST_FRAMEWORK = {
     'NON_FIELD_ERRORS_KEY': 'errors',
     'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.TokenAuthentication',
