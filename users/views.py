@@ -20,7 +20,7 @@ from rest_framework.response import Response
 from sms import sms_sender
 from users.models import CoinHistory, GiftCard, Login, Order, Transfer, User, Verification, get_valid_phone_number, \
     TempToken
-from users.serializers import HistorySerializer, LoginSerializer, UserSerializer
+from users.serializers import HistorySerializer, LoginSerializer, UserSerializer, ResourceUserSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 
 
@@ -525,3 +525,14 @@ def history(request, action):
 
         serializer = HistorySerializer(objects, many=True)
         return Response(serializer.data)
+
+
+@api_view(["GET"])
+@csrf_exempt
+def resource(request):
+    if request.user.is_anonymous:
+        return Response({'detail': "Authentication credentials were not provided."}, status=status.HTTP_403_FORBIDDEN)
+
+    user = request.user
+    serializer = ResourceUserSerializer(user)
+    return Response(serializer.data)
