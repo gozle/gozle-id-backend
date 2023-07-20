@@ -11,10 +11,13 @@ from django.utils.crypto import get_random_string
 from django.views.decorators.csrf import csrf_exempt
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
+from oauth2_provider.contrib.rest_framework import OAuth2Authentication
+from oauth2_provider.models import Application
 from rest_framework import permissions
 from rest_framework import status
+from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.models import Token
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.response import Response
 
 from sms import sms_sender
@@ -528,6 +531,7 @@ def history(request, action):
 
 
 @api_view(["GET"])
+@authentication_classes(OAuth2Authentication)
 @csrf_exempt
 def resource(request):
     if request.user.is_anonymous:
@@ -536,3 +540,13 @@ def resource(request):
     user = request.user
     serializer = ResourceUserSerializer(user)
     return Response(serializer.data)
+
+
+@api_view(["GET"])
+@csrf_exempt
+def get_client(request):
+    if request.user.is_anonymous:
+        return Response({'detail': "Authentication credentials were not provided."}, status=status.HTTP_403_FORBIDDEN)
+
+    client = Application.objects.get(client_id=request.GET.get('client_id'))
+    return Response({"name": client.name})

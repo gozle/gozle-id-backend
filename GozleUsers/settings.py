@@ -164,7 +164,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 REST_FRAMEWORK = {
     'NON_FIELD_ERRORS_KEY': 'errors',
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        "oauth2_provider.contrib.rest_framework.OAuth2Authentication",
+        # "oauth2_provider.contrib.rest_framework.OAuth2Authentication",
         # 'oauth2_provider.backends.OAuth2Backend',
         'rest_framework_simplejwt.authentication.JWTAuthentication',
         # 'rest_framework.authentication.SessionAuthentication',
