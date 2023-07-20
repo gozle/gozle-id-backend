@@ -25,7 +25,7 @@ class ResourceUserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'first_name', 'last_name', 'avatar']
+        fields = ['id', 'username', 'first_name', 'last_name', 'avatar', "phone_number", "email"]
 
     def get_avatar(self, obj):
         if obj.avatar:
