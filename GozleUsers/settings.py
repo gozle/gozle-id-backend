@@ -29,7 +29,7 @@ SECRET_KEY = 'django-insecure-o&g*@%0*g-^#-dd+l*73w9j7^7^e8vtl3b)-&_$#s+^=r@h!%r
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
-ALLOWED_HOSTS = ['i.gozle.com.tm']
+ALLOWED_HOSTS = ['i.gozle.com.tm', "172.16.1.224"]
 CSRF_TRUSTED_ORIGINS = ['https://i.gozle.com.tm']
 CORS_ALLOWED_ORIGINS = ['https://id.gozle.com.tm']
 CORS_ALLOW_ALL_ORIGINS = False
