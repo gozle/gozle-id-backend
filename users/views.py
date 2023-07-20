@@ -531,7 +531,7 @@ def history(request, action):
 
 
 @api_view(["GET"])
-@authentication_classes(OAuth2Authentication)
+@authentication_classes([OAuth2Authentication])
 @csrf_exempt
 def resource(request):
     if request.user.is_anonymous:
