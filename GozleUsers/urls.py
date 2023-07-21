@@ -20,10 +20,9 @@ from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from django.conf import settings
 from django.conf.urls.static import static
-from modernrpc.views import RPCEntryPoint
 from django.views.static import serve
 from rest_framework_simplejwt.views import TokenRefreshView, TokenVerifyView
-
+import oauth2_provider.urls
 schema_view = get_schema_view(
     openapi.Info(
         title="Users",
@@ -34,24 +33,29 @@ schema_view = get_schema_view(
         license=openapi.License(name="BSD License"),
     ),
     public=True,
-    permission_classes=(permissions.AllowAny,),
+    permission_classes=[permissions.AllowAny],
 )
 
 
 urlpatterns = [
+                  # Add media urls here
                   re_path(r'^api/media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
+
+                  # OAuth 2.0 urls here
                   path('o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
-                  path('accounts/', include('django.contrib.auth.urls')),
+
+                  # My urls here
                   path('api/auth/', include('users.urls')),
-                  path('new/api/', include('users.new.urls')),
+
+                  # Simple JWT urls here
                   path('api/token/refresh/', TokenRefreshView.as_view()),
                   path('api/token/verify/', TokenVerifyView.as_view()),
+
+                  # Django Admin urls here
                   path('api/admin/', admin.site.urls),
-                  path('api/rpc/', RPCEntryPoint.as_view()),
-                  path('api/swagger<format>/', schema_view.without_ui(cache_timeout=0),
-                       name='schema-json'),
-                  path('swagger/', schema_view.with_ui('swagger',
-                                                       cache_timeout=0), name='schema-swagger-ui'),
-                  path('api/redoc/', schema_view.with_ui('redoc',
-                                                         cache_timeout=0), name='schema-redoc'),
+
+                  # Swagger urls here
+                  path('api/swagger<format>/', schema_view.without_ui(cache_timeout=0), name='schema-json'),
+                  path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+                  path('api/redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
               ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

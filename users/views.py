@@ -3,7 +3,7 @@ import random
 import pytz
 import requests
 from django.conf import settings
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate
 from django.core.mail import send_mail
 from django.db import transaction
 from django.utils import timezone
@@ -15,7 +15,6 @@ from oauth2_provider.contrib.rest_framework import OAuth2Authentication
 from oauth2_provider.models import Application
 from rest_framework import permissions
 from rest_framework import status
-from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.models import Token
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.response import Response
@@ -36,10 +35,22 @@ def get_tokens_for_user(user):
     }
 
 
+# Function for sending information sms to user
+def send_info_sms(user, date, time, login_object):
+    sms_sender.send(user.phone_number, """{}/{}/{} sagat {}:{}-da "Gozle ID" hasabyňyza girildi.
+
+Enjam: {}
+IP: {}
+
+Eger siz däl bolsaňyz, Gozle ID hasabyňyza giriň we parolyňyzy üýtgediň""".format(date.day, date.month, date.year,
+                                                                                  time.hour, time.minute,
+                                                                                  login_object.os,
+                                                                                  login_object.ip_address))
+
+
 # Create your views here.
 
 # SIGN-UP ############################
-
 
 @swagger_auto_schema(method='post', request_body=openapi.Schema(
     type=openapi.TYPE_OBJECT,
@@ -140,15 +151,7 @@ def verify_number(request):
             time = login_object.created_at.astimezone(
                 pytz.timezone("Asia/Ashgabat")).time()
 
-            sms_sender.send(user.phone_number, """
-{}/{}/{} sagat {}:{}-da "Gozle ID" hasabyňyza girildi.
-
-Enjam: {}
-IP: {}
-
-Eger siz däl bolsaňyz, Gozle ID hasabyňyza giriň we parolyňyzy üýtgediň
-                            """.format(date.day, date.month, date.year, time.hour, time.minute, login_object.os,
-                                       login_object.ip_address))
+            send_info_sms(user, date, time, login_object)
 
             # login(request, user)
             tokens = get_tokens_for_user(user)
@@ -281,7 +284,7 @@ def get_user_server(request):
 @csrf_exempt
 def tfa(request, action):
     """
-    This view function updates the password and two factor auth status of a user
+    This view function updates the password and two-factor auth status of a user
     based on the user id and password data from the POST request.
     It returns a JSON response with a success or error message.
     """
@@ -339,6 +342,13 @@ def tfa(request, action):
                                   " " + request.user_agent.os.version_string
                 login_object.device = request.user_agent.device.family
                 login_object.save()
+
+                date = login_object.created_at.astimezone(
+                    pytz.timezone("Asia/Ashgabat")).date()
+                time = login_object.created_at.astimezone(
+                    pytz.timezone("Asia/Ashgabat")).time()
+
+                send_info_sms(user, date, time, login_object)
 
                 TempToken.objects.get(token=token).delete()
                 # login(request, user)
@@ -468,11 +478,11 @@ def transfer_verify(request):
     receiver.balance += transfer.amount
     receiver.save()
 
-    history = CoinHistory()
-    history.user = receiver
-    history.amount = transfer.amount
-    history.source = user.phone_number
-    history.save()
+    coin_history = CoinHistory()
+    coin_history.user = receiver
+    coin_history.amount = transfer.amount
+    coin_history.source = user.phone_number
+    coin_history.save()
 
     transfer.completed = True
     transfer.save()
@@ -503,11 +513,11 @@ def enterCard(request):
     card.save()
     user.save()
 
-    history = CoinHistory()
-    history.user = user
-    history.amount = card.value
-    history.source = "GiftCard"
-    history.save()
+    coin_history = CoinHistory()
+    coin_history.user = user
+    coin_history.amount = card.value
+    coin_history.source = "GiftCard"
+    coin_history.save()
 
     return Response({"amount": card.value})
 

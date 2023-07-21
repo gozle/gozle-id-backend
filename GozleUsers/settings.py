@@ -19,8 +19,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 MERCHANT_USERNAME = ''
 MERCHANT_PASSWORD = ''
 
-SERVER_TOKEN = 'IksnlMZa4cTTjbZx-Qxa5I0F0gE8NoEMF!=ZLgWL1nVGM-8mGrknEvw0K7SGAUGD'
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
@@ -46,9 +44,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'drf_yasg',
     'rest_framework',
-    'rest_framework.authtoken',
-    #    'django_xmlrpc',
-    'modernrpc',
     'corsheaders',
     'oauth2_provider',
     'django_user_agents',
@@ -142,7 +137,6 @@ USE_I18N = True
 USE_TZ = True
 
 MEDIA_ROOT = 'media/'
-
 MEDIA_URL = '/api/media/'
 
 # Static files (CSS, JavaScript, Images)
@@ -151,6 +145,7 @@ MEDIA_URL = '/api/media/'
 STATIC_URL = 'static/'
 STATIC_ROOT = 'static/'
 
+OAUTH2_PROVIDER_APPLICATION_MODEL = 'users.Application'
 AUTH_USER_MODEL = "users.User"
 swappable = 'AUTH_USER_MODEL'
 
@@ -183,14 +178,3 @@ SIMPLE_JWT = {
     'ROTATE_REFRESH_TOKENS': True,
 }
 USER_AGENTS_CACHE = None
-
-MODERNRPC_METHODS_MODULES = [
-    'users.user_service'
-]
-
-# LOGIN_URL = '/api/admin/login'
-
-# JWT_AUTH = {
-#    'JWT_AUTH_HEADER_PREFIX': 'JWT',
-#    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=300)
-# }
