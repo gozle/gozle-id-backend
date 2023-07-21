@@ -491,10 +491,10 @@ def enterCard(request):
         return Response({'detail': "Authentication credentials were not provided."}, status=status.HTTP_403_FORBIDDEN)
     code = request.POST.get("code")
 
-    if not GiftCard.objects.filter(code=code).exists():
+    if not GiftCard.objects.filter(code=code, used=False).exists():
         return Response({"message": "Invalid Code"}, status=status.HTTP_403_FORBIDDEN)
 
-    card = GiftCard.objects.get(code=code)
+    card = GiftCard.objects.get(code=code, used=False)
 
     user = request.user
     user.balance += card.value
