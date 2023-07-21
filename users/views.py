@@ -3,9 +3,10 @@ import random
 import pytz
 import requests
 from django.conf import settings
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, login
 from django.core.mail import send_mail
 from django.db import transaction
+from django.shortcuts import redirect
 from django.utils import timezone
 from django.utils.crypto import get_random_string
 from django.views.decorators.csrf import csrf_exempt
@@ -560,3 +561,12 @@ def get_client(request):
 
     client = Application.objects.get(client_id=request.GET.get('client_id'))
     return Response({"name": client.name})
+
+
+@api_view(["GET"])
+@csrf_exempt
+def oauth_login(request):
+    user = request.user
+
+    login(request, user)
+    return redirect('/o/authorize/' + '?' + request.GET.urlencode())
