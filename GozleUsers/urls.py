@@ -37,24 +37,12 @@ schema_view = get_schema_view(
     permission_classes=[permissions.AllowAny],
 )
 
-
 urlpatterns = [
                   # Add media urls here
                   re_path(r'^api/media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
 
                   # OAuth 2.0 urls here
-                  path('o/authorize/', oauth2_views.AuthorizationView.as_view(), name="authorize"),
-                  path('o/token/', oauth2_views.TokenView.as_view(), name="token"),
-                  path('o/revoke-token/', oauth2_views.RevokeTokenView.as_view(), name="revoke-token"),
-
-                  # OAuth 2.0 admin urls here
-                  path('o/admin/applications/', oauth2_views.ApplicationList.as_view(), name="list"),
-                  path('o/admin/applications/register/', oauth2_views.ApplicationRegistration.as_view(),
-                       name="register"),
-                  path('o/admin/applications/<pk>/', oauth2_views.ApplicationDetail.as_view(), name="detail"),
-                  path('o/admin/applications/<pk>/delete/', oauth2_views.ApplicationDelete.as_view(), name="delete"),
-                  path('o/admin/applications/<pk>/update/', oauth2_views.ApplicationUpdate.as_view(), name="update"),
-                  # path('o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
+                  path('o/', include(('users.oauth2_urls', 'oauth2'), namespace='oauth2_provider')),
 
                   # My urls here
                   path('api/', include('users.urls')),
