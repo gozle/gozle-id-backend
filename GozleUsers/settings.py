@@ -26,10 +26,10 @@ MERCHANT_PASSWORD = ''
 SECRET_KEY = 'django-insecure-o&g*@%0*g-^#-dd+l*73w9j7^7^e8vtl3b)-&_$#s+^=r@h!%r'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
-ALLOWED_HOSTS = ['i.gozle.com.tm', "172.16.1.224"]
+DEBUG = True
+ALLOWED_HOSTS = ['i.gozle.com.tm', "172.16.1.224", "127.0.0.1"]
 CSRF_TRUSTED_ORIGINS = ['https://i.gozle.com.tm', "http://172.16.1.224:7007", "http://172.16.1.224"]
-CORS_ALLOWED_ORIGINS = ['https://id.gozle.com.tm']
+#CORS_ALLOWED_ORIGINS = ['https://id.gozle.com.tm']
 CORS_ALLOW_ALL_ORIGINS = False
 CORS_ALLOW_CREDENTIALS = True
 # Application definition
@@ -145,7 +145,7 @@ MEDIA_URL = '/api/media/'
 STATIC_URL = 'static/'
 STATIC_ROOT = 'static/'
 
-OAUTH2_PROVIDER_APPLICATION_MODEL = 'users.Application'
+OAUTH2_PROVIDER_APPLICATION_MODEL = 'users.MyApplication'
 AUTH_USER_MODEL = "users.User"
 swappable = 'AUTH_USER_MODEL'
 

@@ -9,4 +9,4 @@ from .verification import Verification
 from .user import get_valid_phone_number
 from .user import validate_names
 from .user import validate_phone_number
-from .application import Application
+from .application import MyApplication
