@@ -106,9 +106,6 @@ def sign_up(request):
         user.verification_number = verification_number
         user.save()
 
-        if not Token.objects.filter(user=user).exists():
-            Token.objects.create(user=user)
-
         return Response({'message': 'OK', 'status': 200})
     else:
         return Response({"message": "Phone Number can't be blank"}, status=status.HTTP_403_FORBIDDEN)
@@ -563,10 +560,21 @@ def get_client(request):
     return Response({"name": client.name})
 
 
+def get_url_from_dict(dict):
+    url = '/o/authorize/?'
+    for key, value in dict.items():
+        url += key + "=" + value + "&"
+    return url[:-1]
+
+
 @api_view(["GET"])
 @csrf_exempt
 def oauth_login(request):
     user = request.user
 
+    get_parameters = {}
+    for key, value in request.GET.items():
+        get_parameters[key] = value
+
     login(request, user)
-    return redirect('/o/authorize/' + '?' + request.GET.urlencode())
+    return redirect(get_url_from_dict(get_parameters))
