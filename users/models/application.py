@@ -1,6 +1,7 @@
 from django.contrib.auth.hashers import make_password
 from django.core.exceptions import ObjectDoesNotExist
 from oauth2_provider.models import AbstractApplication
+from django.contrib.auth.hashers import check_password
 
 from django.db import models
 
@@ -27,7 +28,10 @@ class Application(AbstractApplication):
         :return:Object or False
         """
         try:
-            application = cls.objects.get(client_id=client_id, client_secret=make_password(client_secret))
-            return application
+            application = cls.objects.get(client_id=client_id)
+            if check_password(client_secret, application.client_secret):
+                return application
+            else:
+                return False
         except ObjectDoesNotExist:
             return False

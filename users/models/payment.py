@@ -31,6 +31,8 @@ class Payment(models.Model):
 
     def perform_payment(self):
         # Perform payment
+        self.user.balance -= self.amount
+        self.user.save()
         self.completed = True
         self.save()
         self.send_info_to_user()
