@@ -145,7 +145,7 @@ MEDIA_URL = '/api/media/'
 STATIC_URL = 'static/'
 STATIC_ROOT = 'static/'
 
-OAUTH2_PROVIDER_APPLICATION_MODEL = 'users.MyApplication'
+OAUTH2_PROVIDER_APPLICATION_MODEL = 'users.Application'
 AUTH_USER_MODEL = "users.User"
 swappable = 'AUTH_USER_MODEL'
 
