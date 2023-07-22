@@ -564,6 +564,7 @@ def get_url_from_dict(dict):
     url = '/o/authorize/?'
     for key, value in dict.items():
         url += key + "=" + value + "&"
+    print(url)
     return url[:-1]
 
 
