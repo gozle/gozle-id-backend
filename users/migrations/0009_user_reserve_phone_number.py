@@ -2,10 +2,11 @@
 
 from django.db import migrations, models
 import users.models
+import users.models.validators
+import users.views.functions
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('users', '0008_alter_login_user_coinhistory'),
     ]
@@ -14,7 +15,8 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='user',
             name='reserve_phone_number',
-            field=models.CharField(default='', max_length=30, validators=[users.models.validate_phone_number]),
+            field=models.CharField(default='', max_length=30, validators=[
+                users.models.validators.validate_phone_number]),
             preserve_default=False,
         ),
     ]

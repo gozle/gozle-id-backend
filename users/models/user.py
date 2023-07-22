@@ -1,34 +1,11 @@
-import re
 import uuid
 
 from django.contrib.auth.models import AbstractUser
-from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 from django.db import models
 
-
-def validate_phone_number(value):
-    pattern = r'^(\+9936|9936|6|86)\d{7}$'
-    if not re.match(pattern, value):
-        raise ValidationError('Invalid phone number')
-
-
-def validate_names(value):
-    pattern = r'^[\w\s]+$'
-    if not re.match(pattern, value):
-        raise ValidationError('Name can contain only letters and space')
-    if re.search(r'\d', value):
-        raise ValidationError("Name can't contain any numbers")
-
-
-def get_valid_phone_number(number):
-    if len(number) == 11:
-        return '+' + number
-    elif len(number) == 8:
-        return '+993' + number
-    elif len(number) == 9:
-        return '+993' + number[1:]
-    return number
+from users.models.validators import validate_names, validate_phone_number
+from users.models.functions import get_valid_phone_number
 
 
 class User(AbstractUser):
@@ -57,10 +34,15 @@ class User(AbstractUser):
     avatar = models.ImageField(
         upload_to='avatars/%d', default='default/default_avatar.jpg', blank=True, null=True)
     two_factor_auth = models.CharField(
-        max_length=20, default='none', blank=True)
+        max_length=20, default='default', blank=True)
 
     def __str__(self):
         return str(self.username)
+
+    def check_balance(self, amount):
+        if int(amount) > self.balance:
+            return False
+        return True
 
     def save(self, *args, **kwargs):
         if not self.id:
