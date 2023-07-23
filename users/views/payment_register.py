@@ -19,7 +19,7 @@ def register_payment(request):
     description = request.POST.get('description')
 
     # Check the user
-    if not User.objects.filter(user_id).exists():
+    if not User.objects.filter(id=user_id).exists():
         return Response({"message": "Can't find user"}, status=status.HTTP_404_NOT_FOUND)
 
     user = User.objects.get(id=user_id)
