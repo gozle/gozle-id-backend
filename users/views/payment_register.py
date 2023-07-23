@@ -32,7 +32,7 @@ def register_payment(request):
 
     # Check the balance of user
     if not user.check_balance(amount):
-        return Response({"message": "Hasapda ýeterlik GC tapylmady!"}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"message": "The user's balance is not enough"}, status=status.HTTP_400_BAD_REQUEST)
 
     payment = Payment.objects.create(user=user, client=client, amount=amount, description=description)
     payment.save()
