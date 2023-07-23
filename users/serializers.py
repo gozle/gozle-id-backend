@@ -57,4 +57,4 @@ class PaymentSerializer(serializers.ModelSerializer):
         return obj.client.name
 
     def get_client_type(self, obj):
-        return obj.client.type
+        return obj.client.service_type
