@@ -29,18 +29,8 @@ def enterCard(request):
 
     card = GiftCard.objects.get(code=code, used=False)
 
-    # Update user balance
+    # Use Card
     user = request.user
-    user.balance += card.value
-    card.used = True
-    card.save()
-    user.save()
-
-    # Add coin history
-    coin_history = CoinHistory()
-    coin_history.user = user
-    coin_history.amount = card.value
-    coin_history.source = "GiftCard"
-    coin_history.save()
+    card.use(user)
 
     return Response({"amount": card.value})

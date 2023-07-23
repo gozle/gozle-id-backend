@@ -1,5 +1,6 @@
 import random
 import string
+import uuid
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
@@ -13,11 +14,14 @@ def generate_verification_code():
 
 
 class Payment(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='payments')
     amount = models.IntegerField()
     client = models.ForeignKey(Application, on_delete=models.PROTECT, related_name='payments')
     description = models.TextField(blank=True, null=True)
     verification_code = models.CharField(max_length=40, blank=True)
+
+    accepted = models.BooleanField(default=False)
     completed = models.BooleanField(default=False)
 
     created_at = models.DateTimeField(auto_now_add=True)
