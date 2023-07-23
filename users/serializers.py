@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth import authenticate
-from users.models import CoinHistory, Login, User
+from users.models import CoinHistory, Login, User, Payment
 
 DOMAIN = 'https://i.gozle.com.tm'
 
@@ -43,3 +43,18 @@ class HistorySerializer(serializers.ModelSerializer):
     class Meta:
         model = CoinHistory
         fields = "__all__"
+
+
+class PaymentSerializer(serializers.ModelSerializer):
+    client_name = serializers.SerializerMethodField('get_client_name')
+    client_type = serializers.SerializerMethodField('get_client_type')
+
+    class Meta:
+        model = Payment
+        fields = ["amount", "client_name", "client_type", "description", "created_at"]
+
+    def get_client_name(self, obj):
+        return obj.client.name
+
+    def get_client_type(self, obj):
+        return obj.client.type

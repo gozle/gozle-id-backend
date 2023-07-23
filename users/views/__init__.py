@@ -21,3 +21,5 @@ from .oauth2_login import oauth_login
 
 from .payment_register import register_payment
 from .payment_perform import perform_payment
+from .payment_get import get_payment
+from .payment_accept import accept_payment

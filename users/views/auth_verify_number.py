@@ -32,12 +32,12 @@ def verify_number(request):
     phone_number = request.POST.get('phone_number')
     code = int(request.POST.get('verification-code'))
 
-    # Check if phone number is valid and user exists with that phone number
+    # Check if the phone number is valid and user exists with that phone number
     user = check_user_exists(phone_number)
     if not user:
         return Response({'message': 'User Not Found'}, status=status.HTTP_404_NOT_FOUND)
 
-    # Check if verification code is valid
+    # Check if the verification code is valid
     if not user.verification or user.verification.type != "phone" or user.verification.code != code:
         return Response({'status': False, 'Error': 'Invalid Code'}, status=status.HTTP_401_UNAUTHORIZED)
 
@@ -60,7 +60,7 @@ def verify_number(request):
         return Response({'2fa': token.token})
 
     else:
-        # Create login object to store login history
+        # Create a login object to store login history
         login_object = Login()
         login_object.user = user
         login_object.ip_address = request.META.get('HTTP_X_REAL_IP')
