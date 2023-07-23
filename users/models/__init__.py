@@ -8,3 +8,4 @@ from .transfer import Transfer
 from .verification import Verification
 from .application import Application
 from .payment import Payment
+from .oneTimeToken import OneTimeToken
