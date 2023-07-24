@@ -1,5 +1,4 @@
 from rest_framework import serializers
-from django.contrib.auth import authenticate
 from users.models import CoinHistory, Login, User, Payment
 
 DOMAIN = 'https://i.gozle.com.tm'
@@ -11,10 +10,11 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'username', 'email', 'date_joined', 'first_name', 'last_name', 'birthday', 'balance',
-                  'phone_number',
-                  'avatar', 'created_at', 'two_factor_auth', 'updated_at']
+                  'phone_number', 'region', 'theme', 'language', 'avatar', 'created_at', 'two_factor_auth',
+                  'updated_at']
 
-    def get_avatar(self, obj):
+    @staticmethod
+    def get_avatar(obj):
         if obj.avatar:
             return DOMAIN + obj.avatar.url
         return None
@@ -25,9 +25,11 @@ class ResourceUserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'first_name', 'last_name', 'avatar', "phone_number", "email"]
+        fields = ['id', 'username', 'first_name', 'last_name', 'avatar', "phone_number", "email",
+                  "theme", "language", "region"]
 
-    def get_avatar(self, obj):
+    @staticmethod
+    def get_avatar(obj):
         if obj.avatar:
             return DOMAIN + obj.avatar.url
         return None
@@ -53,8 +55,10 @@ class PaymentSerializer(serializers.ModelSerializer):
         model = Payment
         fields = ["amount", "client_name", "client_type", "description", "created_at"]
 
-    def get_client_name(self, obj):
+    @staticmethod
+    def get_client_name(obj):
         return obj.client.name
 
-    def get_client_type(self, obj):
+    @staticmethod
+    def get_client_type(obj):
         return obj.client.service_type

@@ -29,6 +29,10 @@ class User(AbstractUser):
     email = models.TextField(blank=True, null=True)
     device_info = models.CharField(max_length=400, null=True, blank=True)
 
+    region = models.CharField(max_length=100, blank=True, null=True)
+    theme = models.CharField(max_length=10, default="light", blank=True)
+    language = models.CharField(max_length=10, default="en", blank=True)
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     avatar = models.ImageField(
