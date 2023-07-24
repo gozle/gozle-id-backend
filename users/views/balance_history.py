@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from users.serializers import LoginSerializer, HistorySerializer
 
 
-@api_view(["POST"])
+@api_view(["GET"])
 @csrf_exempt
 def history(request, action):
     # Select action
