@@ -52,7 +52,7 @@ class LoginSerializer(serializers.ModelSerializer):
             "Yandex Browser": "browser_icons/yandex.png",
             "Mobile Safari": "browser_icons/safari.png",
         }
-        return DOMAIN + "/" + settings.STATIC_URL + icons.get(obj.browser, "browser_icons/default.png")
+        return DOMAIN + settings.STATIC_URL + icons.get(obj.browser, "browser_icons/default.png")
 
 
 class HistorySerializer(serializers.ModelSerializer):
