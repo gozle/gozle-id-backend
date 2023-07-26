@@ -1,3 +1,4 @@
+from django.conf import settings
 from rest_framework import serializers
 from users.models import CoinHistory, Login, User, Payment
 
@@ -36,9 +37,22 @@ class ResourceUserSerializer(serializers.ModelSerializer):
 
 
 class LoginSerializer(serializers.ModelSerializer):
+    icon = serializers.SerializerMethodField('get_icon')
+
     class Meta:
         model = Login
-        fields = ['id', "ip_address", "browser", "os", "device", "created_at"]
+        fields = ['id', "ip_address", "browser", "icon", "os", "device", "created_at"]
+
+    @staticmethod
+    def get_icon(obj):
+        icons = {
+            "Chrome Mobile": "browser_icons/chrome.png",
+            "Chrome": "browser_icons/chrome.png",
+            "Edge": "browser_icons/edge.png",
+            "Yandex Browser": "browser_icons/yandex.png",
+            "Mobile Safari": "browser_icons/safari.png",
+        }
+        return DOMAIN + "/" + settings.STATIC_URL + icons.get(obj.browser, "browser_icons/default.png")
 
 
 class HistorySerializer(serializers.ModelSerializer):
