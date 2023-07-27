@@ -1,15 +1,17 @@
 from django.urls import path
 # from users.user_service import UserService
 
-from users.views import enterCard, forgotPassword, history, sign_up, update, verify_number, get_user, tfa, resource, \
-    get_client, oauth_login, register_payment, perform_payment, get_payment, accept_payment, get_token
+from users.views import enterCard, history, sign_up, update, verify_number, get_user, tfa, resource, \
+    get_client, oauth_login, register_payment, perform_payment, get_payment, accept_payment, get_token, \
+    forgot_password_email, forgot_password_change
 from users.views import register_order, order_status
 from users.views import transfer_request, transfer_verify
 
 urlpatterns = [
     path('auth/sign-up', sign_up),
     path('auth/get-user', get_user),
-    path('auth/forget-password/<str:action>', forgotPassword),
+    path('auth/forget-password/change', forgot_password_change),
+    path('auth/forget-password/email', forgot_password_email),
     # path('private/get-user', get_user_server),
     path('auth/update', update),
     path('auth/verify', verify_number),

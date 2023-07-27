@@ -22,13 +22,12 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.views.static import serve
 from rest_framework_simplejwt.views import TokenRefreshView, TokenVerifyView
-import oauth2_provider.views as oauth2_views
 
 schema_view = get_schema_view(
     openapi.Info(
-        title="Users",
+        title="Gozle ID",
         default_version='v1',
-        description="User API",
+        description="Gozle ID API",
         terms_of_service="https://www.google.com/policies/terms/",
         contact=openapi.Contact(email="contact@snippets.local"),
         license=openapi.License(name="BSD License"),

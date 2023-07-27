@@ -6,7 +6,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 
 from users.models import TempToken, Login
-from users.views.functions import send_info_sms, get_tokens_for_user
+from users.views.functions import get_tokens_for_user
 
 
 @api_view(["POST"])
@@ -86,15 +86,6 @@ def tfa(request, action):
             login_object.os = request.user_agent.os.family + " " + request.user_agent.os.version_string
             login_object.device = request.user_agent.device.family
             login_object.save()
-
-            # Get localized date and time
-            date = login_object.created_at.astimezone(
-                pytz.timezone("Asia/Ashgabat")).date()
-            time = login_object.created_at.astimezone(
-                pytz.timezone("Asia/Ashgabat")).time()
-
-            # Send info SMS about login
-            send_info_sms(user, date, time, login_object)
 
             # Delete token
             TempToken.objects.get(token=token).delete()

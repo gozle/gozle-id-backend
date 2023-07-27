@@ -2,22 +2,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from sms import sms_sender
 from users.models import User, Verification
 from users.models.functions import get_valid_phone_number
-
-
-# Function to send info sms
-def send_info_sms(user, date, time, login_object):
-    sms_sender.send(user.phone_number, """{}/{}/{} sagat {}:{}-da "Gozle ID" hasabyňyza girildi.
-
-Enjam: {}
-IP: {}
-
-Eger siz däl bolsaňyz, Gozle ID hasabyňyza giriň we parolyňyzy üýtgediň""".format(date.day, date.month, date.year,
-                                                                                  time.hour, time.minute,
-                                                                                  login_object.os,
-                                                                                  login_object.ip_address))
 
 
 # Function to get tokens for user

@@ -1,11 +1,12 @@
 import random
-from django.utils import timezone
 
 from django.views.decorators.csrf import csrf_exempt
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import permissions, status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 
+from config.swagger_parameters import PHONE_NUMBER
 from sms import sms_sender
 from users.models import User, Verification
 from users.views.functions import check_user_exists, verify_and_delete
@@ -14,6 +15,7 @@ from users.models.functions import get_valid_phone_number
 
 @api_view(["POST"])
 @permission_classes([permissions.AllowAny])
+@swagger_auto_schema(method='post', manual_parameters=[PHONE_NUMBER])
 @csrf_exempt
 def sign_up(request):
     """
@@ -32,9 +34,13 @@ def sign_up(request):
     """
     phone_number = get_valid_phone_number(request.POST.get('phone_number'))
 
-    # Check if phone number is valid
+    # Check if the phone number is valid
     if phone_number == '':
         return Response({"message": "Phone Number can't be blank"}, status=status.HTTP_403_FORBIDDEN)
+
+    # Check if phone number in reverse phone numbers
+    if User.check_if_in_reserve(phone_number):
+        return Response({"message": "Phone Number is in reserve for another number"}, status=status.HTTP_409_CONFLICT)
 
     # Get or create user
     user = check_user_exists(phone_number)

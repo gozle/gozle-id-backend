@@ -1,18 +1,14 @@
-import os
 import string
 import tempfile
 
-from django.conf import settings
 from django.core.files import File
 from django.db import models
 from django.utils.crypto import get_random_string
 from PIL import Image as PILImage, ImageDraw, ImageFont
 
+from config import CARD_TEMPLATE, FONT, GIFTCARD_MESSAGE_TEMPLATE
 from sms import sms_sender
 from users.models import CoinHistory
-
-CARD_TEMPLATE = os.path.join(settings.STATIC_ROOT, "card-template.jpg")
-FONT = os.path.join(settings.STATIC_ROOT, "Roboto-Regular.ttf")
 
 
 def hyphenate(s):
@@ -48,7 +44,8 @@ class GiftCard(models.Model):
     def send_info_to_user(self, user):
         # Function to send a message to the user's phone number.
         phone_number = user.phone_number
-        message = f"Siziň Gozle ID hasabyňyza GiftCard üsti bilen {self.value} GC geçirildi."
+        message = GIFTCARD_MESSAGE_TEMPLATE.get(user.language, GIFTCARD_MESSAGE_TEMPLATE['tm'])
+        message = message.format(value=self.value)
         sms_sender.send(phone_number, message)
 
     def save(self, *args, **kwargs):

@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .forms import CustomUserCreationForm, CustomUserChangeForm, GiftCardForm
+from .forms import CustomUserChangeForm, GiftCardForm
 from .models import GiftCard, Login, User, Verification
 
 

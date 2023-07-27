@@ -4,6 +4,7 @@ from django.contrib.auth.models import AbstractUser
 from django.core.validators import RegexValidator
 from django.db import models
 
+from users.models.reservePhoneNumber import ReservePhoneNumber
 from users.models.validators import validate_names, validate_phone_number
 from users.models.functions import get_valid_phone_number
 
@@ -25,13 +26,13 @@ class User(AbstractUser):
 
     phone_number = models.CharField(
         max_length=30, unique=True, validators=[validate_phone_number])
-    reserve_phone_number = models.CharField(max_length=30, validators=[validate_phone_number])
     email = models.TextField(blank=True, null=True)
     device_info = models.CharField(max_length=400, null=True, blank=True)
 
     region = models.CharField(max_length=100, blank=True, null=True)
+    gender = models.CharField(max_length=20, blank=True, null=True)
     theme = models.CharField(max_length=10, default="light", blank=True)
-    language = models.CharField(max_length=10, default="en", blank=True)
+    language = models.CharField(max_length=10, default="tm", blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -47,6 +48,28 @@ class User(AbstractUser):
         if int(amount) > self.balance:
             return False
         return True
+
+    def update_user(self, request):
+        self.username = request.POST.get('username', self.username)
+        self.first_name = request.POST.get('first_name', self.first_name)
+        self.last_name = request.POST.get('last_name', self.last_name)
+        self.birthday = request.POST.get('birthday', self.birthday)
+        self.email = request.POST.get('email', self.email)
+        self.region = request.POST.get("region", self.region)
+        self.theme = request.POST.get("theme", self.theme)
+        self.gender = request.POST.get("gender", self.gender)
+        self.language = request.POST.get("language", self.language)
+        self.avatar = request.FILES.get('avatar', self.avatar)
+        self.save()
+
+    @classmethod
+    def check_if_in_reserve(cls, phone_number):
+        if ReservePhoneNumber.objects.filter(phone_number=phone_number).exists():
+            return True
+        return False
+
+    # def register_reserve_phone_number(self, phone_number):
+    #     rph = ReservePhoneNumber.objects
 
     def save(self, *args, **kwargs):
         if not self.id:

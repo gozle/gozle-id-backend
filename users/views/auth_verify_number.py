@@ -1,4 +1,3 @@
-import pytz
 from django.utils.crypto import get_random_string
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import permissions, status
@@ -6,7 +5,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 
 from users.models import Verification, TempToken, Login
-from users.views.functions import send_info_sms, get_tokens_for_user, check_user_exists
+from users.views.functions import get_tokens_for_user, check_user_exists
 
 
 @api_view(['POST'])
@@ -68,15 +67,6 @@ def verify_number(request):
         login_object.os = request.user_agent.os.family + " " + request.user_agent.os.version_string
         login_object.device = request.user_agent.device.family
         login_object.save()
-
-        # Get date and time for local time zone
-        date = login_object.created_at.astimezone(
-            pytz.timezone("Asia/Ashgabat")).date()
-        time = login_object.created_at.astimezone(
-            pytz.timezone("Asia/Ashgabat")).time()
-
-        # Send info SMS about login to user
-        send_info_sms(user, date, time, login_object)
 
         # Get tokens for user and return them
         tokens = get_tokens_for_user(user)
