@@ -7,7 +7,6 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 
 from config.swagger_parameters import PHONE_NUMBER
-from config.swagger_serializers import PhoneNumberSerializer
 from sms import sms_sender
 from users.models import User, Verification
 from users.views.functions import check_user_exists, verify_and_delete
@@ -15,7 +14,7 @@ from users.models.functions import get_valid_phone_number
 
 
 @swagger_auto_schema(method='post',
-                     response_body=PhoneNumberSerializer,
+                     request_body=PHONE_NUMBER,
                      responses={
                          200: "Successfully sent verification code",
                          403: "Invalid phone number or Verification code is sent already"
