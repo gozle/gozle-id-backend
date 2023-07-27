@@ -7,8 +7,8 @@ from config.swagger_parameters import JWT_TOKEN
 from users.serializers import UserSerializer
 
 
-@api_view(["GET"])
 @swagger_auto_schema(method='get', manual_parameters=[JWT_TOKEN])
+@api_view(["GET"])
 @csrf_exempt
 def get_user(request):
     """

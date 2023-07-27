@@ -12,9 +12,9 @@ from users.models import Verification
 from users.views.functions import check_user_exists, verify_and_delete
 
 
+@swagger_auto_schema(method='post', manual_parameters=[PHONE_NUMBER])
 @api_view(['POST'])
 @permission_classes([permissions.AllowAny])
-@swagger_auto_schema(method='post', manual_parameters=[PHONE_NUMBER])
 @csrf_exempt
 def forgot_password_email(request):
     """
@@ -67,9 +67,9 @@ def forgot_password_email(request):
     return Response({"message": "Verification code sent to email"})
 
 
+@swagger_auto_schema(method='post', manual_parameters=[PHONE_NUMBER, VERIFICATION_CODE])
 @api_view(['POST'])
 @permission_classes([permissions.AllowAny])
-@swagger_auto_schema(method='post', manual_parameters=[PHONE_NUMBER, VERIFICATION_CODE])
 @csrf_exempt
 def forgot_password_change(request):
     """
