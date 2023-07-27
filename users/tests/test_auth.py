@@ -18,8 +18,8 @@ class AuthTest(APITestCase):
         response = self.client.post('/api/auth/verify', {'phone_number': '+99361945186',
                                                          "verification-code": verification_code})
         self.assertEqual(response.status_code, 200)
-        self.assertIn("access_token", response.data)
-        self.assertIn("refresh_token", response.data)
+        self.assertIn("access", response.data)
+        self.assertIn("refresh", response.data)
 
         refresh_token = response.data.json()['refresh_token']
 
@@ -31,8 +31,8 @@ class AuthTest(APITestCase):
         # Test Refresh Token
         response = self.client.post('/api/token/refresh/', {'refresh_token': refresh_token}, format='json')
         self.assertEqual(response.status_code, 200)
-        self.assertIn("access_token", response.data)
-        self.assertIn("refresh_token", response.data)
+        self.assertIn("access", response.data)
+        self.assertIn("refresh", response.data)
 
     def test_sign_up_blank(self):
         response = self.client.post('/api/auth/sign-up', {'phone_number': '', })
