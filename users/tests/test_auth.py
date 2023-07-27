@@ -24,8 +24,8 @@ class AuthTest(APITestCase):
         refresh_token = response.data['refresh']
 
         # Test Get User
-        response = self.client.get('/api/auth/get-user',
-                                   headers={"Authorization": f"Bearer {response.data['access']}"})
+        response = self.client.get('/api/auth/get-user', HTTP_AUTHORIZATION=f"Bearer {response.data['access']}",
+                                   format='json')
         self.assertEqual(response.status_code, 200)
 
         # Test Refresh Token
