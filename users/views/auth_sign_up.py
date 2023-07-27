@@ -13,9 +13,9 @@ from users.views.functions import check_user_exists, verify_and_delete
 from users.models.functions import get_valid_phone_number
 
 
-@api_view(["POST"])
-@permission_classes([permissions.AllowAny])
 @swagger_auto_schema(method='post', manual_parameters=[PHONE_NUMBER])
+@permission_classes([permissions.AllowAny])
+@api_view(["POST"])
 @csrf_exempt
 def sign_up(request):
     """
