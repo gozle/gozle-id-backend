@@ -4,7 +4,7 @@ JWT_TOKEN = openapi.Parameter("Authorization", openapi.IN_HEADER, description="J
                                                                               "Example:\nAuthorization: Bearer "
                                                                               "<token>", type=openapi.TYPE_STRING)
 
-PHONE_NUMBER = openapi.Parameter("phone_number", openapi.IN_FORM, description="Phone number", type=openapi.TYPE_STRING)
+PHONE_NUMBER = openapi.Parameter("phone_number", openapi.IN_BODY, description="Phone number", type=openapi.TYPE_STRING)
 
-VERIFICATION_CODE = openapi.Parameter("verification-code", openapi.IN_FORM, description="Verification code",
+VERIFICATION_CODE = openapi.Parameter("verification-code", openapi.IN_BODY, description="Verification code",
                                       type=openapi.TYPE_STRING)
