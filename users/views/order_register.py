@@ -25,11 +25,11 @@ def register_order(request):
     # Get data from the request
     user = request.user
     description = ""
-    amount = request.POST.get('amount')
-    return_url = request.POST.get('returnUrl')
-    fail_url = request.POST.get('failUrl')
-    lang = request.POST.get('language')
-    page_view = request.POST.get('pageView')
+    amount = request.data.get('amount')
+    return_url = request.data.get('returnUrl')
+    fail_url = request.data.get('failUrl')
+    lang = request.data.get('language')
+    page_view = request.data.get('pageView')
 
     # Save the order
     order = Order(user=user, description=description, amount=amount)

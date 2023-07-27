@@ -13,10 +13,10 @@ from users.models import Application, Payment, User
 @csrf_exempt
 def register_payment(request):
     # Get data from request
-    user_id = request.POST.get('user_id')
-    client_id = request.POST.get('client_id')
-    amount = request.POST.get('amount')
-    description = request.POST.get('description')
+    user_id = request.data.get('user_id')
+    client_id = request.data.get('client_id')
+    amount = request.data.get('amount')
+    description = request.data.get('description')
 
     # Check the user
     if not User.objects.filter(id=user_id).exists():

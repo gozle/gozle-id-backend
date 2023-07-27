@@ -1,14 +1,32 @@
 import random
 
 from django.views.decorators.csrf import csrf_exempt
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
+from config.swagger_parameters import JWT_TOKEN
 from sms import sms_sender
 from users.models import User, Transfer
 
 
+@swagger_auto_schema(method='post',
+                     manual_parameters=[JWT_TOKEN],
+                     request_body=openapi.Schema(
+                         type=openapi.TYPE_OBJECT,
+                         properties={
+                             'send_to': openapi.Schema(type=openapi.TYPE_STRING,
+                                                       description='The phone number of the receiver'),
+                             'amount': openapi.Schema(type=openapi.TYPE_STRING,
+                                                      description='amount of GC to transfer'),
+                         }
+                     ),
+                     responses={200: 'Verification code sent',
+                                404: 'Receiver not found',
+                                409: "User's balance is smaller than amount"}
+                     )
 @api_view(["POST"])
 @csrf_exempt
 def transfer_request(request):
@@ -24,8 +42,8 @@ def transfer_request(request):
     """
     # Get data from request
     user = request.user
-    send_to = request.POST.get('send_to')
-    amount = int(request.POST.get('amount'))
+    send_to = request.data.get('send_to')
+    amount = int(request.data.get('amount'))
 
     # Check if the receiver exists
     receiver = User.objects.filter(phone_number=send_to).first()

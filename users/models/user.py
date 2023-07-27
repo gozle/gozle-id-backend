@@ -49,16 +49,16 @@ class User(AbstractUser):
             return False
         return True
 
-    def update_user(self, request):
-        self.username = request.POST.get('username', self.username)
-        self.first_name = request.POST.get('first_name', self.first_name)
-        self.last_name = request.POST.get('last_name', self.last_name)
-        self.birthday = request.POST.get('birthday', self.birthday)
-        self.email = request.POST.get('email', self.email)
-        self.region = request.POST.get("region", self.region)
-        self.theme = request.POST.get("theme", self.theme)
-        self.gender = request.POST.get("gender", self.gender)
-        self.language = request.POST.get("language", self.language)
+    def update(self, request):
+        self.username = request.data.get('username', self.username)
+        self.first_name = request.data.get('first_name', self.first_name)
+        self.last_name = request.data.get('last_name', self.last_name)
+        self.birthday = request.data.get('birthday', self.birthday)
+        self.email = request.data.get('email', self.email)
+        self.region = request.data.get("region", self.region)
+        self.theme = request.data.get("theme", self.theme)
+        self.gender = request.data.get("gender", self.gender)
+        self.language = request.data.get("language", self.language)
         self.avatar = request.FILES.get('avatar', self.avatar)
         self.save()
 

@@ -1,11 +1,17 @@
 from django.views.decorators.csrf import csrf_exempt
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
+from config.swagger_parameters import JWT_TOKEN, PAYMENT_ID
 from users.models import Payment
 
 
+@swagger_auto_schema(method='get',
+                     manual_parameters=[JWT_TOKEN, PAYMENT_ID],
+                     responses={200: "Verification code of payment"}
+                     )
 @api_view(['GET'])
 @csrf_exempt
 def accept_payment(request):

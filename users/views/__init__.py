@@ -5,7 +5,10 @@ from .auth_forgot_password import forgot_password_change
 from .auth_update_user import update
 from .auth_get_user import get_user
 
-from .tfa import tfa
+from .tfa import activate_tfa
+from .tfa import deactivate_tfa
+from .tfa import check_tfa
+from .tfa import get_token_tfa
 
 from .order_register import register_order
 from .order_status import order_status

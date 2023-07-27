@@ -1,6 +1,8 @@
 from django.contrib.auth import login
 from django.shortcuts import redirect
 from django.views.decorators.csrf import csrf_exempt
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
@@ -10,6 +12,13 @@ from users.models import OneTimeToken
 from users.views.functions import get_url_from_dict
 
 
+@swagger_auto_schema(method='get',
+                     manual_parameters=[
+                         openapi.Parameter("token", openapi.IN_QUERY, type=openapi.TYPE_STRING, required=True,
+                                           description="One Time Token"),
+                     ],
+                     responses={200: "One Time Token"}
+                     )
 @api_view(["GET"])
 @permission_classes([AllowAny])
 @csrf_exempt

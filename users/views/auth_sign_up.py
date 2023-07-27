@@ -1,12 +1,12 @@
 import random
 
 from django.views.decorators.csrf import csrf_exempt
+from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import permissions, status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 
-from config.swagger_parameters import PHONE_NUMBER
 from sms import sms_sender
 from users.models import User, Verification
 from users.views.functions import check_user_exists, verify_and_delete
@@ -14,7 +14,12 @@ from users.models.functions import get_valid_phone_number
 
 
 @swagger_auto_schema(method='post',
-                     request_body=PHONE_NUMBER,
+                     request_body=openapi.Schema(
+                         type=openapi.TYPE_OBJECT,
+                         properties={
+                             'phone_number': openapi.Schema(type=openapi.TYPE_STRING, description='phone_number'),
+                         }
+                     ),
                      responses={
                          200: "Successfully sent verification code",
                          403: "Invalid phone number or Verification code is sent already"
@@ -37,7 +42,7 @@ def sign_up(request):
         403: Invalid phone number
         403: Verification code is sent
     """
-    phone_number = get_valid_phone_number(request.POST.get('phone_number'))
+    phone_number = get_valid_phone_number(request.data.get('phone_number'))
 
     # Check if the phone number is valid
     if phone_number == '':

@@ -16,7 +16,7 @@ def order_status(request):
     Responses:
         200: The order status.
     """
-    order_id = request.POST.get('orderId')
+    order_id = request.data.get('orderId')
 
     request_url = ""
 
