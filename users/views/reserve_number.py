@@ -1,18 +1,34 @@
 import random
 
 from django.views.decorators.csrf import csrf_exempt
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
+from config.swagger_parameters import JWT_TOKEN
 from users.models import ReservePhoneNumber, User
 
 
+@swagger_auto_schema(method='post',
+                     manual_parameters=[JWT_TOKEN],
+                     request_body=openapi.Schema(
+                         type=openapi.TYPE_OBJECT,
+                         properties={
+                             'phone_number': openapi.Schema(type=openapi.TYPE_STRING,
+                                                            description='The Reserve Phone Number'),
+                         }
+                     ),
+                     responses={
+                         200: "Successfully sent verification code",
+                         409: "Phone number already registered",
+                     })
 @api_view(["POST"])
 @csrf_exempt
 def register_reserve_number(request):
     # Get the data from the request
-    phone_number = request.POST.get("phone_number")
+    phone_number = request.data.get("phone_number")
 
     # Check if the phone number is already registered
     if User.objects.filter(phone_number=phone_number).exists():
@@ -31,6 +47,14 @@ def register_reserve_number(request):
     return Response({"message": "Verification code sent"}, status=status.HTTP_200_OK)
 
 
+@swagger_auto_schema(method='get',
+                     manual_parameters=[JWT_TOKEN,
+                                        openapi.Parameter("verification-code", openapi.IN_QUERY, required=True,
+                                                          description="Verification code which sent to phone number",
+                                                          type=openapi.TYPE_STRING)],
+                     responses={200: 'Activated Successfully',
+                                400: 'Invalid Verification Code'}
+                     )
 @api_view(["GET"])
 @csrf_exempt
 def activate_reserve_number(request):
@@ -48,15 +72,26 @@ def activate_reserve_number(request):
     return Response({"message": "Activated successfully"}, status=status.HTTP_200_OK)
 
 
+@swagger_auto_schema(method='get',
+                     manual_parameters=[JWT_TOKEN],
+                     responses={200: 'Deactivated Successfully',
+                                401: 'Invalid Credentials'}
+                     )
 @api_view(["GET"])
 @csrf_exempt
 def deactivate_reserve_number(request):
     user = request.user
-    ReservePhoneNumber.objects.filter(user=user).delete()
+    if ReservePhoneNumber.objects.filter(user=user).exists():
+        ReservePhoneNumber.objects.get(user=user).delete()
 
     return Response({"message": "Deactivated successfully"}, status=status.HTTP_200_OK)
 
 
+@swagger_auto_schema(method='get',
+                     manual_parameters=[JWT_TOKEN],
+                     responses={200: 'Reserve Phone Number',
+                                404: 'Reserve phone number not found'}
+                     )
 @api_view(["GET"])
 @csrf_exempt
 def get_reserve_number(request):

@@ -8,13 +8,17 @@ from rest_framework import permissions, status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 
-from config.swagger_parameters import PHONE_NUMBER
 from users.models import Verification
 from users.views.functions import check_user_exists, verify_and_delete
 
 
 @swagger_auto_schema(method='post',
-                     request_body=PHONE_NUMBER,
+                     request_body=openapi.Schema(
+                         type=openapi.TYPE_OBJECT,
+                         properties={
+                             'phone_number': openapi.Schema(type=openapi.TYPE_STRING, description='phone_number'),
+                         }
+                     ),
                      responses={200: 'Verification code sent to email',
                                 403: "User's email not found",
                                 404: 'User Not Found'})
@@ -36,7 +40,7 @@ def forgot_password_email(request):
         - 403: Verification code already sent to user's email or email not found
     """
     # Get the user's phone number
-    phone_number = request.POST.get('phone_number')
+    phone_number = request.data.get('phone_number')
 
     # Check if the user exists
     user = check_user_exists(phone_number)
@@ -79,6 +83,7 @@ def forgot_password_email(request):
                              'phone_number': openapi.Schema(type=openapi.TYPE_STRING, description='phone_number'),
                              'verification-code': openapi.Schema(type=openapi.TYPE_STRING, description='Verification '
                                                                                                        'code'),
+                             'password': openapi.Schema(type=openapi.TYPE_STRING, description='password'),
                          }
                      ),
                      responses={200: 'Password set successfully',
@@ -105,8 +110,8 @@ def forgot_password_change(request):
         - 401: Verification code incorrect
     """
     # Get data from request
-    phone_number = request.POST.get('phone_number')
-    code = int(request.POST.get('verification-code'))
+    phone_number = request.data.get('phone_number')
+    code = int(request.data.get('verification-code'))
 
     # Check if the user exists
     user = check_user_exists(phone_number)
@@ -116,7 +121,7 @@ def forgot_password_change(request):
     # Check if verification code correct
     if user.verification and user.verification.type == "email" and user.verification.code == code:
         # Get and set the new password
-        password = request.POST.get("password")
+        password = request.data.get("password")
         user.set_password(password)
         user.save()
 

@@ -1,5 +1,7 @@
 from django.utils.crypto import get_random_string
 from django.views.decorators.csrf import csrf_exempt
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import permissions, status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
@@ -8,6 +10,19 @@ from users.models import Verification, TempToken, Login
 from users.views.functions import get_tokens_for_user, check_user_exists
 
 
+@swagger_auto_schema(method='post',
+                     request_body=openapi.Schema(
+                         type=openapi.TYPE_OBJECT,
+                         properties={
+                             'phone_number': openapi.Schema(type=openapi.TYPE_STRING, description='phone_number'),
+                             'verification-code': openapi.Schema(type=openapi.TYPE_STRING, description='Verification '
+                                                                                                       'code'),
+                         }
+                     ),
+                     responses={200: 'JWT Tokens, or 2fa Token',
+                                404: 'User Not Found',
+                                401: 'Invalid Code'}
+                     )
 @api_view(['POST'])
 @permission_classes([permissions.AllowAny])
 @csrf_exempt
@@ -28,8 +43,8 @@ def verify_number(request):
         404: User Not Found
     """
     # Get data from request
-    phone_number = request.POST.get('phone_number')
-    code = int(request.POST.get('verification-code'))
+    phone_number = request.data.get('phone_number')
+    code = int(request.data.get('verification-code'))
 
     # Check if the phone number is valid and user exists with that phone number
     user = check_user_exists(phone_number)

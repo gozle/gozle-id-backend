@@ -12,9 +12,9 @@ from users.models import Application, Payment
 @permission_classes([AllowAny])
 def perform_payment(request):
     # Get data from request
-    client_id = request.POST.get('client_id')
-    client_secret = request.POST.get('client_secret')
-    verification_code = request.POST.get('verification_code')
+    client_id = request.data.get('client_id')
+    client_secret = request.data.get('client_secret')
+    verification_code = request.data.get('verification_code')
 
     # Authorize client credentials
     client = Application.authorize(client_id, client_secret)

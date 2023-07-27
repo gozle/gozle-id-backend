@@ -29,7 +29,7 @@ SECRET_KEY = 'django-insecure-o&g*@%0*g-^#-dd+l*73w9j7^7^e8vtl3b)-&_$#s+^=r@h!%r
 DEBUG = True
 ALLOWED_HOSTS = ['i.gozle.com.tm', "172.16.1.224", "127.0.0.1"]
 CSRF_TRUSTED_ORIGINS = ['https://i.gozle.com.tm', "http://172.16.1.224:7007", "http://172.16.1.224"]
-#CORS_ALLOWED_ORIGINS = ['https://id.gozle.com.tm']
+# CORS_ALLOWED_ORIGINS = ['https://id.gozle.com.tm']
 CORS_ALLOW_ALL_ORIGINS = False
 CORS_ALLOW_CREDENTIALS = True
 # Application definition
@@ -87,6 +87,8 @@ WSGI_APPLICATION = 'GozleUsers.wsgi.application'
 
 DATABASES = {
     'default': {
+        # 'ENGINE': 'django.db.backends.sqlite3',
+        # 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'gozle_account',
         'USER': 'account',
