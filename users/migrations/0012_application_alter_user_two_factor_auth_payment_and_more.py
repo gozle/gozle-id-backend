@@ -8,9 +8,8 @@ import oauth2_provider.models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('users', '0011_rename_application_myapplication'),
+        ('users', '0009_user_reserve_phone_number'),
     ]
 
     operations = [
@@ -18,18 +17,33 @@ class Migration(migrations.Migration):
             name='Application',
             fields=[
                 ('id', models.BigAutoField(primary_key=True, serialize=False)),
-                ('client_id', models.CharField(db_index=True, default=oauth2_provider.generators.generate_client_id, max_length=100, unique=True)),
+                ('client_id',
+                 models.CharField(db_index=True, default=oauth2_provider.generators.generate_client_id, max_length=100,
+                                  unique=True)),
                 ('redirect_uris', models.TextField(blank=True, help_text='Allowed URIs list, space separated')),
-                ('post_logout_redirect_uris', models.TextField(blank=True, help_text='Allowed Post Logout URIs list, space separated')),
-                ('client_type', models.CharField(choices=[('confidential', 'Confidential'), ('public', 'Public')], max_length=32)),
-                ('authorization_grant_type', models.CharField(choices=[('authorization-code', 'Authorization code'), ('implicit', 'Implicit'), ('password', 'Resource owner password-based'), ('client-credentials', 'Client credentials'), ('openid-hybrid', 'OpenID connect hybrid')], max_length=32)),
-                ('client_secret', oauth2_provider.models.ClientSecretField(blank=True, db_index=True, default=oauth2_provider.generators.generate_client_secret, help_text='Hashed on Save. Copy it now if this is a new secret.', max_length=255)),
+                ('post_logout_redirect_uris',
+                 models.TextField(blank=True, help_text='Allowed Post Logout URIs list, space separated')),
+                ('client_type',
+                 models.CharField(choices=[('confidential', 'Confidential'), ('public', 'Public')], max_length=32)),
+                ('authorization_grant_type', models.CharField(
+                    choices=[('authorization-code', 'Authorization code'), ('implicit', 'Implicit'),
+                             ('password', 'Resource owner password-based'),
+                             ('client-credentials', 'Client credentials'), ('openid-hybrid', 'OpenID connect hybrid')],
+                    max_length=32)),
+                ('client_secret', oauth2_provider.models.ClientSecretField(blank=True, db_index=True,
+                                                                           default=oauth2_provider.generators.generate_client_secret,
+                                                                           help_text='Hashed on Save. Copy it now if this is a new secret.',
+                                                                           max_length=255)),
                 ('name', models.CharField(blank=True, max_length=255)),
                 ('created', models.DateTimeField(auto_now_add=True)),
                 ('updated', models.DateTimeField(auto_now=True)),
-                ('algorithm', models.CharField(blank=True, choices=[('', 'No OIDC support'), ('RS256', 'RSA with SHA-2 256'), ('HS256', 'HMAC with SHA-2 256')], default='', max_length=5)),
+                ('algorithm', models.CharField(blank=True,
+                                               choices=[('', 'No OIDC support'), ('RS256', 'RSA with SHA-2 256'),
+                                                        ('HS256', 'HMAC with SHA-2 256')], default='', max_length=5)),
                 ('logo', models.ImageField(blank=True, null=True, upload_to='icons')),
-                ('service_type', models.CharField(blank=True, choices=[('service', 'Service'), ('commerce', 'Commerce'), ('social', 'Social')], default='service', max_length=255)),
+                ('service_type', models.CharField(blank=True, choices=[('service', 'Service'), ('commerce', 'Commerce'),
+                                                                       ('social', 'Social')], default='service',
+                                                  max_length=255)),
                 ('skip_authorization', models.BooleanField(blank=True, default=True)),
                 ('is_active', models.BooleanField(blank=True, default=True)),
             ],
@@ -52,13 +66,16 @@ class Migration(migrations.Migration):
                 ('completed', models.BooleanField(default=False)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
-                ('client', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='payments', to=settings.OAUTH2_PROVIDER_APPLICATION_MODEL)),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='payments', to=settings.AUTH_USER_MODEL)),
+                ('client', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='payments',
+                                             to=settings.OAUTH2_PROVIDER_APPLICATION_MODEL)),
+                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='payments',
+                                           to=settings.AUTH_USER_MODEL)),
             ],
         ),
         migrations.AddField(
             model_name='application',
             name='user',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='%(app_label)s_%(class)s', to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE,
+                                    related_name='%(app_label)s_%(class)s', to=settings.AUTH_USER_MODEL),
         ),
     ]
