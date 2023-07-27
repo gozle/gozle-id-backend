@@ -14,7 +14,7 @@ class AuthTest(APITestCase):
         user = User.objects.get(phone_number='+99361945186')
         verification_code = Verification.objects.get(user=user).code
         response = self.client.post('/api/auth/verify', {'phone_number': '+99361945186',
-                                                         "verification_code": verification_code})
+                                                         "verification-code": verification_code})
         self.assertEqual(response.status_code, 200)
 
     def test_sign_up_blank(self):
