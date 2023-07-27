@@ -21,7 +21,7 @@ class AuthTest(APITestCase):
         self.assertIn("access", response.data)
         self.assertIn("refresh", response.data)
 
-        refresh_token = response.data['refresh_token']
+        refresh_token = response.data['refresh']
 
         # Test Get User
         response = self.client.get('/api/auth/get-user',
