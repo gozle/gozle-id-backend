@@ -2,19 +2,19 @@ import random
 
 from django.core.mail import send_mail
 from django.views.decorators.csrf import csrf_exempt
+from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import permissions, status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 
-from config.swagger_parameters import PHONE_NUMBER, VERIFICATION_CODE
-from config.swagger_serializers import PhoneNumberSerializer, PhoneNumberAndVerificationCodeSerializer
+from config.swagger_parameters import PHONE_NUMBER
 from users.models import Verification
 from users.views.functions import check_user_exists, verify_and_delete
 
 
 @swagger_auto_schema(method='post',
-                     request_body=PhoneNumberSerializer,
+                     request_body=PHONE_NUMBER,
                      responses={200: 'Verification code sent to email',
                                 403: "User's email not found",
                                 404: 'User Not Found'})
@@ -73,7 +73,14 @@ def forgot_password_email(request):
 
 
 @swagger_auto_schema(method='post',
-                     request_body=PhoneNumberAndVerificationCodeSerializer,
+                     request_body=openapi.Schema(
+                         type=openapi.TYPE_OBJECT,
+                         properties={
+                             'phone_number': openapi.Schema(type=openapi.TYPE_STRING, description='phone_number'),
+                             'verification-code': openapi.Schema(type=openapi.TYPE_STRING, description='Verification '
+                                                                                                       'code'),
+                         }
+                     ),
                      responses={200: 'Password set successfully',
                                 404: 'User Not Found',
                                 401: 'Invalid Code'}
