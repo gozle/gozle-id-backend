@@ -35,20 +35,10 @@ def update(request):
     if User.objects.exclude(id=user.id).filter(username=request.POST.get('username')).exists():
         return Response({'username': "Already exists"}, status=status.HTTP_409_CONFLICT)
 
+    # TODO: Reserve phone number
+
     # Update user with new data
-    user.username = request.POST.get('username') if request.POST.get('username') else user.username
-    user.first_name = request.POST.get('first_name') if request.POST.get('first_name') else user.first_name
-    user.last_name = request.POST.get('last_name') if request.POST.get('last_name') else user.last_name
-    user.birthday = request.POST.get('birthday') if request.POST.get('birthday') else user.birthday
-    user.email = request.POST.get('email') if request.POST.get('email') else user.email
-    user.reserve_phone_number = request.POST.get("reserve_phone_number") if request.POST.get(
-        "reserve_phone_number") else user.reserve_phone_number
-    user.region = request.POST.get("region") if request.POST.get("region") else user.region
-    user.theme = request.POST.get("theme") if request.POST.get("theme") else user.theme
-    user.language = request.POST.get("language") if request.POST.get("language") else user.language
-    user.avatar = request.FILES.get(
-        'avatar') if request.FILES.get('avatar') else user.avatar
-    user.save()
+    user.update_user(request)
 
     # Return updated user
     serializer = UserSerializer(user)

@@ -1,21 +1,16 @@
-from django.contrib.auth.hashers import make_password
 from django.core.exceptions import ObjectDoesNotExist
 from oauth2_provider.models import AbstractApplication
 from django.contrib.auth.hashers import check_password
 
 from django.db import models
 
-TYPE_CHOICES = (
-    ('service', 'Service'),
-    ('commerce', 'Commerce'),
-    ('social', 'Social'),
-)
+from config import SERVICE_TYPE_CHOICES
 
 
 # Extends AbstractApplication to add a logo field and service type.
 class Application(AbstractApplication):
     logo = models.ImageField(upload_to='icons', blank=True, null=True)
-    service_type = models.CharField(max_length=255, choices=TYPE_CHOICES, blank=True, default='service')
+    service_type = models.CharField(max_length=255, choices=SERVICE_TYPE_CHOICES, blank=True, default='service')
     skip_authorization = models.BooleanField(default=True, blank=True)
     is_active = models.BooleanField(default=True, blank=True)
 
