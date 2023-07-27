@@ -30,6 +30,5 @@ class Login(models.Model):
         sms_sender.send(self.user.phone_number, message)
 
     def save(self, *args, **kwargs):
-        self.send_info_about_login()
-
         super().save(*args, **kwargs)
+        self.send_info_about_login()
