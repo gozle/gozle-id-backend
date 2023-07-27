@@ -15,7 +15,7 @@ from users.models.functions import get_valid_phone_number
 
 
 @swagger_auto_schema(method='post',
-                     response_body=PhoneNumberSerializer(),
+                     response_body=PhoneNumberSerializer,
                      manual_parameters=[PHONE_NUMBER],
                      responses={
                          200: "Successfully sent verification code",
