@@ -14,7 +14,7 @@ from users.views.functions import check_user_exists, verify_and_delete
 
 
 @swagger_auto_schema(method='post',
-                     request_body=PhoneNumberSerializer(),
+                     request_body=PhoneNumberSerializer,
                      manual_parameters=[PHONE_NUMBER],
                      responses={200: 'Verification code sent to email',
                                 403: "User's email not found",
@@ -74,7 +74,7 @@ def forgot_password_email(request):
 
 
 @swagger_auto_schema(method='post',
-                     request_body=PhoneNumberAndVerificationCodeSerializer(),
+                     request_body=PhoneNumberAndVerificationCodeSerializer,
                      manual_parameters=[PHONE_NUMBER, VERIFICATION_CODE],
                      responses={200: 'Password set successfully',
                                 404: 'User Not Found',
