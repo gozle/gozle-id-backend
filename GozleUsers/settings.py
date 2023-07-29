@@ -149,7 +149,10 @@ STATIC_URL = 'static/'
 STATIC_ROOT = 'static/'
 
 OAUTH2_PROVIDER_APPLICATION_MODEL = 'users.Application'  # 'oauth2_provider.Application'
-ALLOWED_REDIRECT_URI_SCHEMES = ["http", "https", "ftp", "gozle.video.app"]
+
+OAUTH2_PROVIDER = {
+    "ALLOWED_REDIRECT_URI_SCHEMES": ["http", "https", "ftp", "gozle.video.app"]
+}
 
 AUTH_USER_MODEL = "users.User"
 swappable = 'AUTH_USER_MODEL'
