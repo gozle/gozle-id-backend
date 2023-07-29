@@ -149,6 +149,8 @@ STATIC_URL = 'static/'
 STATIC_ROOT = 'static/'
 
 OAUTH2_PROVIDER_APPLICATION_MODEL = 'users.Application'  # 'oauth2_provider.Application'
+ALLOWED_REDIRECT_URI_SCHEMES = ["http", "https", "ftp", "gozle.video.app"]
+
 AUTH_USER_MODEL = "users.User"
 swappable = 'AUTH_USER_MODEL'
 
@@ -182,4 +184,4 @@ SIMPLE_JWT = {
 }
 USER_AGENTS_CACHE = None
 
-LOGIN_URL = None
+LOGIN_URL = "/account/login/"
