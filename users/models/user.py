@@ -1,9 +1,11 @@
 import uuid
 
 from django.contrib.auth.models import AbstractUser
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import RegexValidator
 from django.db import models
 
+from .language import Language
 from users.models.reservePhoneNumber import ReservePhoneNumber
 from users.models.validators import validate_names, validate_phone_number
 from users.models.functions import get_valid_phone_number
@@ -32,7 +34,7 @@ class User(AbstractUser):
     region = models.CharField(max_length=100, blank=True, null=True)
     gender = models.CharField(max_length=20, blank=True, null=True)
     theme = models.CharField(max_length=10, default="light", blank=True)
-    language = models.CharField(max_length=10, default="tm", blank=True)
+    language = models.ForeignKey(Language, on_delete=models.SET_NULL, null=True, blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -58,7 +60,12 @@ class User(AbstractUser):
         self.region = request.data.get("region", self.region)
         self.theme = request.data.get("theme", self.theme)
         self.gender = request.data.get("gender", self.gender)
-        self.language = request.data.get("language", self.language)
+        if request.data.get("language"):
+            try:
+                language = Language.objects.get(id=request.data.get("language"))
+                self.language = language
+            except ObjectDoesNotExist:
+                pass
         self.avatar = request.FILES.get('avatar', self.avatar)
         self.save()
 

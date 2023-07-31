@@ -33,3 +33,5 @@ from .reserve_number import register_reserve_number
 from .reserve_number import activate_reserve_number
 from .reserve_number import deactivate_reserve_number
 from .reserve_number import get_reserve_number
+
+from .languages import get_languages

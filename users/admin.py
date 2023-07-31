@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 from .forms import CustomUserChangeForm, GiftCardForm
-from .models import GiftCard, Login, User, Verification
+from .models import GiftCard, Login, User, Verification, Language
 
 
 class CustomUserAdmin(admin.ModelAdmin):
@@ -21,4 +21,5 @@ admin.site.register(User, CustomUserAdmin)
 admin.site.register(Verification)
 admin.site.register(GiftCard, GiftCardAdmin)
 admin.site.register(Login)
-#admin.site.register(Application)
+admin.site.register(Language)
+# admin.site.register(Application)
