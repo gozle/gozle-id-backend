@@ -34,7 +34,7 @@ class User(AbstractUser):
     region = models.CharField(max_length=100, blank=True, null=True)
     gender = models.CharField(max_length=20, blank=True, null=True)
     theme = models.CharField(max_length=10, default="light", blank=True)
-    language = models.ForeignKey(Language, on_delete=models.SET_NULL, null=True, blank=True)
+    preferred_language = models.ForeignKey(Language, on_delete=models.SET_NULL, null=True, blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
