@@ -45,7 +45,7 @@ def register_order(request):
     # Get data from the request
     user = request.user
     description = ""
-    amount = int(request.data.get('amount')) * 1000
+    amount = int(request.data.get('amount')) * 100
     return_url = request.data.get('returnUrl')
     fail_url = request.data.get('failUrl', None)
     lang = request.data.get('language', "ru")

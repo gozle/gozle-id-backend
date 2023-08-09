@@ -61,7 +61,7 @@ def order_status(request):
         if order.status != "completed":
             order.status = "completed"
             user = request.user
-            user.balance += order.amount / 1000
+            user.balance += order.amount / 100
             user.save()
             order.save()
             return Response({"message": "Order accepted successfully"}, status=status.HTTP_200_OK)
