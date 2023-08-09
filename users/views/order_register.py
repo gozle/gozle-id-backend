@@ -1,6 +1,7 @@
 import requests
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
+from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
@@ -27,21 +28,21 @@ def register_order(request):
     description = ""
     amount = request.data.get('amount')
     return_url = request.data.get('returnUrl')
-    fail_url = request.data.get('failUrl')
-    lang = request.data.get('language')
-    page_view = request.data.get('pageView')
+    fail_url = request.data.get('failUrl', None)
+    lang = request.data.get('language', "ru")
+    page_view = request.data.get('pageView', "mobile")
 
     # Save the order
     order = Order(user=user, description=description, amount=amount)
     order.save()
 
-    request_url = ""
+    request_url = "https://epg.senagatbank.com.tm/epg/rest/register.do"
 
     # Data to be sent to the server
     data = {
         'userName': settings.MERCHANT_USERNAME,
         'password': settings.MERCHANT_PASSWORD,
-        'orderNumber': order.id,
+        'orderNumber': order.get_order_id(),
         'amount': order.amount,
         'currency': order.currency,
         'returnUrl': return_url,
@@ -58,4 +59,6 @@ def register_order(request):
     order.order_id = response_data['orderId']
     order.save()
 
+    if response_data.get("errorCode") != 0:
+        return Response(response_data, status=status.HTTP_400_BAD_REQUEST)
     return Response(response_data)

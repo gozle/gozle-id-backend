@@ -1,6 +1,7 @@
 import requests
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
+from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 
@@ -18,7 +19,7 @@ def order_status(request):
     """
     order_id = request.data.get('orderId')
 
-    request_url = ""
+    request_url = "https://epg.senagatbank.com.tm/epg/rest/getOrderStatus.do"
 
     data = {
         'userName': settings.MERCHANT_USERNAME,
@@ -30,4 +31,6 @@ def order_status(request):
 
     response_data = response.json()
 
+    if response_data.get("errorCode", 0) != 0:
+        return Response(response_data, status=status.HTTP_400_BAD_REQUEST)
     return Response(response_data)

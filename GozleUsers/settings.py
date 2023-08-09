@@ -16,8 +16,8 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-MERCHANT_USERNAME = ''
-MERCHANT_PASSWORD = ''
+MERCHANT_USERNAME = 'horjun_gozle'
+MERCHANT_PASSWORD = 'horjun_gozle1'
 
 DOMAIN = "https://i.gozle.com.tm"
 # Quick-start development settings - unsuitable for production

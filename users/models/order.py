@@ -1,4 +1,5 @@
-import uuid
+import datetime
+import random
 
 from django.db import models
 
@@ -12,16 +13,24 @@ STATUS_CHOICES = (
 
 
 class Order(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     order_id = models.CharField(max_length=150, blank=True, null=True)
-    user = models.ForeignKey(
-        User, related_name='orders', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, related_name='orders', on_delete=models.CASCADE)
 
     description = models.TextField(blank=True, null=True)
     amount = models.IntegerField()
-    currency = models.CharField(max_length=10, default="TMT", blank=True)
+    currency = models.IntegerField(default=934, blank=True)
     status = models.CharField(
         max_length=50, choices=STATUS_CHOICES, default='pending')
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    def get_order_id(self):
+        today = datetime.date.today()
+        year = today.year
+        month = today.month
+        day = today.day
+
+        order_id = "%02d%02d%02d" % (year, month, day)
+        order_id += "{:03d}".format(self.id)
+        return order_id

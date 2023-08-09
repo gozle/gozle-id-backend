@@ -81,6 +81,12 @@ class User(AbstractUser):
     def save(self, *args, **kwargs):
         if not self.id:
             self.id = uuid.uuid4()
+        if not self.language:
+            try:
+                lang = Language.objects.get(sortname="tk")
+                self.language = lang
+            except ObjectDoesNotExist:
+                pass
         self.phone_number = get_valid_phone_number(self.phone_number)
         self.validate_unique()
         super(User, self).save(*args, **kwargs)
