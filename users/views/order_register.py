@@ -1,13 +1,32 @@
 import requests
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
+from jwcrypto.jwt import JWT
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
+from config.swagger_parameters import JWT_TOKEN
 from users.models import Order
 
 
+@swagger_auto_schema(method='post',
+                     manual_parameters=[JWT_TOKEN],
+                     request_body=openapi.Schema(
+                         type=openapi.TYPE_OBJECT,
+                         properties={
+                             'amount': openapi.Schema(type=openapi.TYPE_STRING, description='The amount of order'),
+                             "returnUrl": openapi.Schema(type=openapi.TYPE_STRING,
+                                                         description="Return url if payment is successfull"),
+                             "language": openapi.Schema(type=openapi.TYPE_STRING, description="Language. en|ru")
+                         }
+                     ),
+                     responses={
+                         200: "Order successfully registered",
+                         400: "Error during registering order"
+                     })
 @api_view(["POST"])
 @csrf_exempt
 def register_order(request):
@@ -26,7 +45,7 @@ def register_order(request):
     # Get data from the request
     user = request.user
     description = ""
-    amount = request.data.get('amount')
+    amount = int(request.data.get('amount')) * 1000
     return_url = request.data.get('returnUrl')
     fail_url = request.data.get('failUrl', None)
     lang = request.data.get('language', "ru")
