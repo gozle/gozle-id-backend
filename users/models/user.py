@@ -4,7 +4,6 @@ from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import RegexValidator
 from django.db import models
-from users.models import City, Region
 
 from .language import Language
 from users.models.reservePhoneNumber import ReservePhoneNumber
