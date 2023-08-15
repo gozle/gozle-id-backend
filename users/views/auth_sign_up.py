@@ -25,7 +25,7 @@ from users.models.functions import get_valid_phone_number
                          403: "Invalid phone number or Verification code is sent already"
                      })
 @api_view(["POST"])
-@permission_classes([permissions.AllowAny, IsModerator])
+@permission_classes([permissions.AllowAny])
 @csrf_exempt
 def sign_up(request):
     """
