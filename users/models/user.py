@@ -32,8 +32,8 @@ class User(AbstractUser):
     email = models.TextField(blank=True, null=True)
     device_info = models.CharField(max_length=400, null=True, blank=True)
 
-    region = models.ForeignKey(Region, blank=True, null=True)
-    city = models.ForeignKey(City, blank=True, null=True)
+    region = models.ForeignKey('users.Region', blank=True, null=True)
+    city = models.ForeignKey('users.City', blank=True, null=True)
     gender = models.CharField(max_length=20, blank=True, null=True)
     theme = models.CharField(max_length=10, default="light", blank=True)
     language = models.ForeignKey(Language, on_delete=models.SET_NULL, null=True, blank=True)
