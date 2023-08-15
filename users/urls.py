@@ -1,6 +1,6 @@
 from django.urls import path
 
-from users.views import enterCard, history, sign_up, update, verify_number, get_user, tfa, resource, \
+from users.views import enterCard, get_cities, get_regions, history, sign_up, update, verify_number, get_user, tfa, resource, \
     get_client, oauth_login, register_payment, perform_payment, get_payment, accept_payment, get_token, \
     forgot_password_email, forgot_password_change, register_reserve_number, activate_reserve_number, \
     deactivate_reserve_number, get_reserve_number, activate_tfa, deactivate_tfa, check_tfa, get_token_tfa, get_languages
@@ -46,4 +46,6 @@ urlpatterns = [
     path('reserve-number/get', get_reserve_number),
 
     path("languages", get_languages),
+    path('regions', get_regions),
+    path('cities', get_cities),
 ]

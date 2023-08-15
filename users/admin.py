@@ -1,5 +1,7 @@
 from django.contrib import admin
 
+from users.models import Region, City
+
 from .forms import CustomUserChangeForm, GiftCardForm
 from .models import GiftCard, Login, User, Verification, Language
 
@@ -23,3 +25,5 @@ admin.site.register(GiftCard, GiftCardAdmin)
 admin.site.register(Login)
 admin.site.register(Language)
 # admin.site.register(Application)
+admin.site.register(Region)
+admin.site.register(City)

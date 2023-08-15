@@ -4,3 +4,5 @@ from .payment import PaymentSerializer
 from .resource_user import ResourceUserSerializer
 from .user import UserSerializer
 from .language import LanguageSerializer
+from .city import CitySerializer
+from .region import RegionSerializer

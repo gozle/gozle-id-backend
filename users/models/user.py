@@ -4,6 +4,7 @@ from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import RegexValidator
 from django.db import models
+from users.models import City, Region
 
 from .language import Language
 from users.models.reservePhoneNumber import ReservePhoneNumber
@@ -31,7 +32,8 @@ class User(AbstractUser):
     email = models.TextField(blank=True, null=True)
     device_info = models.CharField(max_length=400, null=True, blank=True)
 
-    region = models.CharField(max_length=100, blank=True, null=True)
+    region = models.ForeignKey(Region, blank=True, null=True)
+    city = models.ForeignKey(City, blank=True, null=True)
     gender = models.CharField(max_length=20, blank=True, null=True)
     theme = models.CharField(max_length=10, default="light", blank=True)
     language = models.ForeignKey(Language, on_delete=models.SET_NULL, null=True, blank=True)
