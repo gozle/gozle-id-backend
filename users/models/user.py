@@ -4,6 +4,9 @@ from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import RegexValidator
 from django.db import models
+from users.models.city import City
+
+from users.models.region import Region
 
 from .language import Language
 from users.models.reservePhoneNumber import ReservePhoneNumber
@@ -59,10 +62,16 @@ class User(AbstractUser):
         self.birthday = request.data.get('birthday', self.birthday)
         self.email = request.data.get('email', self.email)
         self.region = request.data.get("region", self.region)
-        if request.data.get("language"):
+        if request.data.get("region"):
             try:
-                language = Language.objects.get(id=request.data.get("language"))
-                self.language = language
+                region = Region.objects.get(id=request.data.get("region"))
+                self.region = region
+            except ObjectDoesNotExist:
+                pass
+        if request.data.get("city"):
+            try:
+                city = City.objects.get(id=request.data.get("city"))
+                self.city = city
             except ObjectDoesNotExist:
                 pass
         self.theme = request.data.get("theme", self.theme)
