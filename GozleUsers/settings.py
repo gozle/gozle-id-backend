@@ -29,7 +29,7 @@ SECRET_KEY = 'django-insecure-o&g*@%0*g-^#-dd+l*73w9j7^7^e8vtl3b)-&_$#s+^=r@h!%r
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 ALLOWED_HOSTS = ['i.gozle.com.tm', "172.16.1.224", "127.0.0.1"]
-CSRF_TRUSTED_ORIGINS = ['https://i.gozle.com.tm', "http://172.16.1.224:7007", "http://172.16.1.224"]
+CSRF_TRUSTED_ORIGINS = ['https://i.gozle.com.tm', "http://172.16.1.224:12197", "http://172.16.1.224"]
 # CORS_ALLOWED_ORIGINS = ['https://id.gozle.com.tm']
 CORS_ALLOW_ALL_ORIGINS = False
 CORS_ALLOW_CREDENTIALS = True
@@ -90,14 +90,14 @@ DATABASES = {
     'default': {
         # 'ENGINE': 'django.db.backends.sqlite3',
         # 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-        'ENGINE': 'django.db.backends.mysql',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'gozle_account',
         'USER': 'account',
         'PASSWORD': 'Ajf0hfasi1bifabfkja_901_f-1',
-        'HOST': '172.16.1.227',
-        'PORT': '',
-        'OPTIONS': {
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"}
+        'HOST': '172.16.1.92',
+        'PORT': '2000',
+#        'OPTIONS': {
+#            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"}
     }
 }
 
