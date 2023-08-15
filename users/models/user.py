@@ -59,6 +59,12 @@ class User(AbstractUser):
         self.birthday = request.data.get('birthday', self.birthday)
         self.email = request.data.get('email', self.email)
         self.region = request.data.get("region", self.region)
+        if request.data.get("language"):
+            try:
+                language = Language.objects.get(id=request.data.get("language"))
+                self.language = language
+            except ObjectDoesNotExist:
+                pass
         self.theme = request.data.get("theme", self.theme)
         self.gender = request.data.get("gender", self.gender)
         if request.data.get("language"):
@@ -84,7 +90,7 @@ class User(AbstractUser):
             self.id = uuid.uuid4()
         if not self.language:
             try:
-                lang = Language.objects.get(sortname="tk")
+                lang = Language.objects.get(short_name="tk")
                 self.language = lang
             except ObjectDoesNotExist:
                 pass
