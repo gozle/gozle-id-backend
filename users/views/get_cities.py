@@ -8,7 +8,7 @@ from rest_framework import status
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 
-from users.models import City, Region
+from users.models import Region
 from users.serializers import CitySerializer
 
 
