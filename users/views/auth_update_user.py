@@ -15,17 +15,17 @@ from users.serializers import UserSerializer
                      request_body=openapi.Schema(
                          type=openapi.TYPE_OBJECT,
                          properties={
-                             'username': openapi.Schema(type=openapi.TYPE_STRING, description='username', required=False),
-                             'first_name': openapi.Schema(type=openapi.TYPE_STRING, description='First Name', required=False),
-                             'last_name': openapi.Schema(type=openapi.TYPE_STRING, description='Last Name', required=False),
-                             'birthday': openapi.Schema(type=openapi.TYPE_STRING, description='Birthday', required=False),
-                             'email': openapi.Schema(type=openapi.TYPE_STRING, description='Email', required=False),
-                             'region': openapi.Schema(type=openapi.TYPE_STRING, description='Id of Region object', required=False),
-                             'city': openapi.Schema(type=openapi.TYPE_STRING, description='Id of City object', required=False),
-                             'theme': openapi.Schema(type=openapi.TYPE_STRING, description='Theme', required=False),
-                             'gender': openapi.Schema(type=openapi.TYPE_STRING, description='Gender', required=False),
-                             'language': openapi.Schema(type=openapi.TYPE_STRING, description='Language', required=False),
-                             'avatar': openapi.Schema(type=openapi.TYPE_FILE, description="Avatar", required=False),
+                             'username': openapi.Schema(type=openapi.TYPE_STRING, description='username'),
+                             'first_name': openapi.Schema(type=openapi.TYPE_STRING, description='First Name'),
+                             'last_name': openapi.Schema(type=openapi.TYPE_STRING, description='Last Name'),
+                             'birthday': openapi.Schema(type=openapi.TYPE_STRING, description='Birthday'),
+                             'email': openapi.Schema(type=openapi.TYPE_STRING, description='Email'),
+                             'region': openapi.Schema(type=openapi.TYPE_STRING, description='Id of Region object'),
+                             'city': openapi.Schema(type=openapi.TYPE_STRING, description='Id of City object'),
+                             'theme': openapi.Schema(type=openapi.TYPE_STRING, description='Theme'),
+                             'gender': openapi.Schema(type=openapi.TYPE_STRING, description='Gender'),
+                             'language': openapi.Schema(type=openapi.TYPE_STRING, description='Language'),
+                             'avatar': openapi.Schema(type=openapi.TYPE_FILE, description="Avatar"),
 
                          }
                      ),
