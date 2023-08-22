@@ -24,7 +24,14 @@ from users.models import Order
                          }
                      ),
                      responses={
-                         200: "Order successfully registered",
+                         200: openapi.Schema(
+                            type=openapi.TYPE_OBJECT,
+                            properties={
+                             'orderId': openapi.Schema(type=openapi.TYPE_STRING, description='Order ID in bank system'),
+                             "formUrl": openapi.Schema(type=openapi.TYPE_STRING,
+                                                         description="The Form url you need to redirect user to this form url"),
+                            }
+                         ),
                          400: "Error during registering order"
                      })
 @api_view(["POST"])
@@ -75,9 +82,11 @@ def register_order(request):
 
     # Get the response
     response_data = response.json()
-    order.order_id = response_data['orderId']
-    order.save()
 
     if response_data.get("errorCode") != 0:
         return Response(response_data, status=status.HTTP_400_BAD_REQUEST)
+        
+    order.order_id = response_data['orderId']
+    order.save()
+
     return Response(response_data)
