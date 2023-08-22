@@ -19,11 +19,20 @@ from users.models import Order
                          properties={
                              'orderId': openapi.Schema(type=openapi.TYPE_STRING,
                                                        description='Order id returned by bank'),
+                             'language': openapi.Schema(type=openapi.TYPE_STRING, description='Response Language'),
                          }
                      ),
                      responses={
-                         200: "Order successfully registered",
-                         400: "Error during registering order"
+                         200: "Order accepted successfully",
+                         202: "Order already accepted",
+                         400: openapi.Schema(
+                         type=openapi.TYPE_OBJECT,
+                         properties={
+                             'ErrorCode': openapi.Schema(type=openapi.TYPE_STRING,
+                                                       description='Error Code'),
+                             'ErrorMessage': openapi.Schema(type=openapi.TYPE_STRING, description='Error message to show user'),
+                         }
+                     )
                      })
 @api_view(["POST"])
 @csrf_exempt
@@ -37,13 +46,15 @@ def order_status(request):
         200: The order status.
     """
     order_id = request.data.get('orderId')
+    language = request.data.get('language', 'en')
 
     request_url = "https://epg.senagatbank.com.tm/epg/rest/getOrderStatus.do"
 
     data = {
         'userName': settings.MERCHANT_USERNAME,
         'password': settings.MERCHANT_PASSWORD,
-        'orderId': order_id
+        'orderId': order_id,
+        'language': language
     }
 
     response = requests.post(request_url, data=data)

@@ -32,7 +32,14 @@ from users.models import Order
                                                          description="The Form url you need to redirect user to this form url"),
                             }
                          ),
-                         400: "Error during registering order"
+                         400: openapi.Schema(
+                            type=openapi.TYPE_OBJECT,
+                            properties={
+                             'errorCode': openapi.Schema(type=openapi.TYPE_STRING, description='Error Code'),
+                             "errorMessage": openapi.Schema(type=openapi.TYPE_STRING,
+                                                         description="Error msesage to show user"),
+                            }
+                         )
                      })
 @api_view(["POST"])
 @csrf_exempt
@@ -85,7 +92,7 @@ def register_order(request):
 
     if response_data.get("errorCode") != 0:
         return Response(response_data, status=status.HTTP_400_BAD_REQUEST)
-        
+
     order.order_id = response_data['orderId']
     order.save()
 
