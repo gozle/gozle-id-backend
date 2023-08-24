@@ -47,7 +47,7 @@ def register_reserve_number(request):
     return Response({"message": "Verification code sent"}, status=status.HTTP_200_OK)
 
 
-@swagger_auto_schema(method='get',
+@swagger_auto_schema(method='post',
                      manual_parameters=[JWT_TOKEN,
                                         openapi.Parameter("verification-code", openapi.IN_QUERY, required=True,
                                                           description="Verification code which sent to phone number",
@@ -55,11 +55,11 @@ def register_reserve_number(request):
                      responses={200: 'Activated Successfully',
                                 400: 'Invalid Verification Code'}
                      )
-@api_view(["GET"])
+@api_view(["POST"])
 @csrf_exempt
 def activate_reserve_number(request):
     # Get the data from the request
-    verification_code = request.GET.get("verification-code")
+    verification_code = request.data.get("verification-code")
     user = request.user
 
     # Check if the verification code is valid
@@ -72,12 +72,12 @@ def activate_reserve_number(request):
     return Response({"message": "Activated successfully"}, status=status.HTTP_200_OK)
 
 
-@swagger_auto_schema(method='get',
+@swagger_auto_schema(method='post',
                      manual_parameters=[JWT_TOKEN],
                      responses={200: 'Deactivated Successfully',
                                 401: 'Invalid Credentials'}
                      )
-@api_view(["GET"])
+@api_view(["POST"])
 @csrf_exempt
 def deactivate_reserve_number(request):
     user = request.user
