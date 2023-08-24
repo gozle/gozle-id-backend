@@ -49,7 +49,7 @@ def register_reserve_number(request):
 
 @swagger_auto_schema(method='post',
                      manual_parameters=[JWT_TOKEN,
-                                        openapi.Parameter("verification-code", openapi.IN_QUERY, required=True,
+                                        openapi.Parameter("verification-code", openapi.IN_BODY, required=True,
                                                           description="Verification code which sent to phone number",
                                                           type=openapi.TYPE_STRING)],
                      responses={200: 'Activated Successfully',
