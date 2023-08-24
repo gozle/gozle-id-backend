@@ -11,6 +11,8 @@ from users.serializers import RegionSerializer
 @permission_classes([AllowAny])
 @csrf_exempt
 def get_regions(request):
+    lang = request.GET.get("lang")
+
     regions = Region.objects.all()
-    serializer = RegionSerializer(regions, many=True)
+    serializer = RegionSerializer(regions, many=True, context={"lang": lang})
     return Response(serializer.data)
