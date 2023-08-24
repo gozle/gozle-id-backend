@@ -4,6 +4,7 @@ from users.models import Region, City
 
 from .forms import CustomUserChangeForm, GiftCardForm
 from .models import GiftCard, Login, User, Verification, Language
+from modeltranslation.admin import TranslationAdmin
 
 
 class CustomUserAdmin(admin.ModelAdmin):
@@ -19,11 +20,19 @@ class GiftCardAdmin(admin.ModelAdmin):
     list_filter = ["used", "image"]
 
 
+class RegionAdmin(TranslationAdmin):
+    pass
+
+
+class CityAdmin(TranslationAdmin):
+    pass
+
+
 admin.site.register(User, CustomUserAdmin)
 admin.site.register(Verification)
 admin.site.register(GiftCard, GiftCardAdmin)
 admin.site.register(Login)
 admin.site.register(Language)
 # admin.site.register(Application)
-admin.site.register(Region)
-admin.site.register(City)
+admin.site.register(Region, RegionAdmin)
+admin.site.register(City, CityAdmin)

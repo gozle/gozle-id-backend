@@ -37,6 +37,7 @@ CORS_ALLOW_CREDENTIALS = True
 
 INSTALLED_APPS = [
     'users.apps.UsersConfig',
+    'modeltranslation',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -96,8 +97,8 @@ DATABASES = {
         'PASSWORD': 'Ajf0hfasi1bifabfkja_901_f-1',
         'HOST': '172.16.1.92',
         'PORT': '2000',
-#        'OPTIONS': {
-#            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"}
+        #        'OPTIONS': {
+        #            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"}
     }
 }
 
@@ -136,6 +137,12 @@ LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'Asia/Ashgabat'
 
 USE_I18N = True
+gettext = lambda s: s
+LANGUAGES = (
+    ('en', gettext('English')),
+    ('ru', gettext('Russian')),
+    ('tk', gettext('Turkmen')),
+)
 
 USE_TZ = True
 
