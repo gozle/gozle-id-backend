@@ -25,11 +25,12 @@ from users.serializers import CitySerializer
 def get_cities(request):
     # Get data
     region_id = request.GET.get("region")
+    lang = request.GET.get("lang")
 
     try:
         region = Region.objects.get(id=region_id)
     except:
         return Response({"message": "Region not found"}, status=status.HTTP_404_NOT_FOUND)
     cities = region.cities.all()
-    serializer = CitySerializer(cities, many=True)
+    serializer = CitySerializer(cities, many=True, context={"lang": lang})
     return Response(serializer.data)
