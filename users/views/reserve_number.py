@@ -48,10 +48,15 @@ def register_reserve_number(request):
 
 
 @swagger_auto_schema(method='post',
-                     manual_parameters=[JWT_TOKEN,
-                                        openapi.Parameter("verification-code", openapi.IN_BODY, required=True,
-                                                          description="Verification code which sent to phone number",
-                                                          type=openapi.TYPE_STRING)],
+                     manual_parameters=[JWT_TOKEN],
+                     request_body=openapi.Schema(
+                         type=openapi.TYPE_OBJECT,
+                         properties={
+                             'verification-code': openapi.Schema(type=openapi.TYPE_STRING,
+                                                                 description='Verification code which sent to phone '
+                                                                             'number'),
+                         }
+                     ),
                      responses={200: 'Activated Successfully',
                                 400: 'Invalid Verification Code'}
                      )
