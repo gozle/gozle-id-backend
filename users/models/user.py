@@ -61,7 +61,6 @@ class User(AbstractUser):
         self.last_name = request.data.get('last_name', self.last_name)
         self.birthday = request.data.get('birthday', self.birthday)
         self.email = request.data.get('email', self.email)
-        self.region = request.data.get("region", self.region)
         if request.data.get("region"):
             try:
                 region = Region.objects.get(id=request.data.get("region"))
