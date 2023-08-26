@@ -21,7 +21,8 @@ from users.models import Order, Bank
                              'amount': openapi.Schema(type=openapi.TYPE_STRING, description='The amount of order'),
                              "returnUrl": openapi.Schema(type=openapi.TYPE_STRING,
                                                          description="Return url if payment is successfull"),
-                             "language": openapi.Schema(type=openapi.TYPE_STRING, description="Language. en|ru")
+                             "language": openapi.Schema(type=openapi.TYPE_STRING, description="Language. en|ru"),
+                             "bank": openapi.Schema(type=openapi.TYPE_STRING, description="Bank id")
                          }
                      ),
                      responses={
