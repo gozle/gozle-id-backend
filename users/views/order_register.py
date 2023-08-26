@@ -85,7 +85,7 @@ def register_order(request):
         'password': settings.MERCHANT_PASSWORD,
         'orderNumber': order.get_order_id(),
         'amount': order.amount,
-        'currency': order.currency,
+        'currency': order.bank.currency,
         'returnUrl': return_url,
         'failUrl': fail_url,
         'description': description,
