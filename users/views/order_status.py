@@ -48,11 +48,16 @@ def order_status(request):
     order_id = request.data.get('orderId')
     language = request.data.get('language', 'en')
 
-    request_url = "https://epg.senagatbank.com.tm/epg/rest/getOrderStatus.do"
+    try:
+        order = Order.objects.get(order_id=order_id)
+    except ObjectDoesNotExist:
+        return Response({"message": "Order is not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    request_url = order.bank.status_url
 
     data = {
-        'userName': settings.MERCHANT_USERNAME,
-        'password': settings.MERCHANT_PASSWORD,
+        'userName': order.bank.merchant_username,
+        'password': order.bank.merchant_password,
         'orderId': order_id,
         'language': language
     }

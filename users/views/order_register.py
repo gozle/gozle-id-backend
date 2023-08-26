@@ -77,12 +77,10 @@ def register_order(request):
     order = Order(user=user, description=description, amount=amount, bank=bank)
     order.save()
 
-    request_url = "https://epg.senagatbank.com.tm/epg/rest/register.do"
-
     # Data to be sent to the server
     data = {
-        'userName': settings.MERCHANT_USERNAME,
-        'password': settings.MERCHANT_PASSWORD,
+        'userName': bank.merchant_username,
+        'password': bank.merchant_password,
         'orderNumber': order.get_order_id(),
         'amount': order.amount,
         'currency': order.bank.currency,
@@ -93,7 +91,7 @@ def register_order(request):
         'pageView': page_view,
     }
     # Send the request
-    response = requests.post(request_url, data=data)
+    response = requests.post(bank.register_url, data=data)
 
     # Get the response
     response_data = response.json()
