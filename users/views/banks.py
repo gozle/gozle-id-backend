@@ -6,7 +6,7 @@ from users.models import Bank
 from users.serializers import BankSerializer
 
 
-@api_view("GET")
+@api_view(["GET"])
 @csrf_exempt
 def get_banks(request):
     banks = Bank.objects.all()
