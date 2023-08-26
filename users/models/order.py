@@ -1,9 +1,5 @@
 import datetime
-import random
-
 from django.db import models
-
-from users.models import Bank
 from users.models.user import User
 
 STATUS_CHOICES = (
@@ -20,7 +16,7 @@ class Order(models.Model):
     description = models.TextField(blank=True, null=True)
     amount = models.IntegerField()
     status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='pending')
-    bank = models.ForeignKey(Bank, on_delete=models.SET_NULL, null=True, related_name="orders")
+    bank = models.ForeignKey("users.Bank", on_delete=models.SET_NULL, null=True, related_name="orders")
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
