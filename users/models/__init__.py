@@ -13,3 +13,4 @@ from .reservePhoneNumber import ReservePhoneNumber
 from .language import Language
 from .region import Region
 from .city import City
+from .bank import Bank

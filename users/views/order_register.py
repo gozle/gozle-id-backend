@@ -1,5 +1,6 @@
 import requests
 from django.conf import settings
+from django.core.exceptions import ObjectDoesNotExist
 from django.views.decorators.csrf import csrf_exempt
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
@@ -9,7 +10,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 from config.swagger_parameters import JWT_TOKEN
-from users.models import Order
+from users.models import Order, Bank
 
 
 @swagger_auto_schema(method='post',
@@ -64,9 +65,15 @@ def register_order(request):
     fail_url = request.data.get('failUrl', None)
     lang = request.data.get('language', "ru")
     page_view = "desktop"
+    bank_id = request.data.get("bank")
+
+    try:
+        bank = Bank.objects.get(id=bank_id)
+    except ObjectDoesNotExist:
+        return Response({"message": "Bank not found"}, status=status.HTTP_404_NOT_FOUND)
 
     # Save the order
-    order = Order(user=user, description=description, amount=amount)
+    order = Order(user=user, description=description, amount=amount, bank=bank)
     order.save()
 
     request_url = "https://epg.senagatbank.com.tm/epg/rest/register.do"
@@ -82,7 +89,7 @@ def register_order(request):
         'failUrl': fail_url,
         'description': description,
         'language': lang,
-        'pageView': page_view
+        'pageView': page_view,
     }
     # Send the request
     response = requests.post(request_url, data=data)

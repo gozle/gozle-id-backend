@@ -6,3 +6,4 @@ from .user import UserSerializer
 from .language import LanguageSerializer
 from .city import CitySerializer
 from .region import RegionSerializer
+from .bank import BankSerializer

@@ -35,6 +35,7 @@ from .reserve_number import deactivate_reserve_number
 from .reserve_number import get_reserve_number
 
 from .languages import get_languages
+from .banks import get_banks
 
 from .get_cities import get_cities
 from .get_regions import get_regions
