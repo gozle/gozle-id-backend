@@ -63,7 +63,7 @@ def register_order(request):
     return_url = request.data.get('returnUrl')
     fail_url = request.data.get('failUrl', None)
     lang = request.data.get('language', "ru")
-    page_view = request.data.get('pageView', "mobile")
+    page_view = "desktop"
 
     # Save the order
     order = Order(user=user, description=description, amount=amount)
