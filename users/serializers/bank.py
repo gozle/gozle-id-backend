@@ -7,4 +7,4 @@ class BankSerializer(ModelSerializer):
 
     class Meta:
         model = Bank
-        fields = "__all__"
+        fields = ["id", "name", "icon", "currency"]
