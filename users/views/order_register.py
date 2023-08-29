@@ -75,11 +75,11 @@ def register_order(request):
     except ObjectDoesNotExist:
         return Response({"message": "Bank not found"}, status=status.HTTP_404_NOT_FOUND)
 
-    if Order.objects.filter(user=user, completed="pending").exists():
-        if Order.objects.get(user=user, completed="pending").created_at > datetime.now() - timedelta(minutes=5):
+    if Order.objects.filter(user=user, status="pending").exists():
+        if Order.objects.get(user=user, status="pending").created_at > datetime.now() - timedelta(minutes=5):
             return Response({"message": "Order register requested recently, please wait 5 minutes"})
 
-        Order.objects.get(user=user, completed="pending").delete()
+        Order.objects.filter(user=user, status="pending").delete()
 
     # Save the order
     order = Order(user=user, description=description, amount=amount, bank=bank)
