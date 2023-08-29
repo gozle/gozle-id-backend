@@ -31,11 +31,19 @@ def register_reserve_number(request):
     phone_number = request.data.get("phone_number")
 
     # Check if the phone number is already registered
-    if User.objects.filter(phone_number=phone_number).exists():
+    if User.objects.filter(phone_number=phone_number).exists() or ReservePhoneNumber.objects.filter(
+                                                                    phone_number=phone_number, is_active=True):
         return Response({"message": "Phone number already registered"}, status=status.HTTP_409_CONFLICT)
 
     # Create a new reserve phone number
     user = request.user
+
+    if ReservePhoneNumber.objects.filter(user=user, is_active=False):
+        ReservePhoneNumber.objects.filter(user=user, is_active=False).delete()
+    elif ReservePhoneNumber.objects.filter(user=user, is_active=True):
+        return Response({"This user already has reserve phone number. Deactivate it first"},
+                        status=status.HTTP_400_BAD_REQUEST)
+
     verification_number = random.randint(1000, 9999)
     reserve_phone_number = ReservePhoneNumber.objects.create(user=user,
                                                              phone_number=phone_number,
