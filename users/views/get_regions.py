@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from users.models import Region
 from users.serializers import RegionSerializer
 
+
 @api_view(["GET"])
 @permission_classes([AllowAny])
 @csrf_exempt

@@ -1,11 +1,10 @@
 import requests
-from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.views.decorators.csrf import csrf_exempt
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 from config.swagger_parameters import JWT_TOKEN
@@ -70,10 +69,6 @@ def order_status(request):
         return Response(response_data, status=status.HTTP_400_BAD_REQUEST)
 
     if response_data.get("OrderStatus", 0) == 2:
-        try:
-            order = Order.objects.get(order_id=order_id)
-        except ObjectDoesNotExist:
-            return Response({"message": "Order is not found"}, status=status.HTTP_404_NOT_FOUND)
         if order.status != "completed":
             order.status = "completed"
             user = request.user

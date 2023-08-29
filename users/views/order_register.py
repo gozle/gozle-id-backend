@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+
 import requests
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
@@ -73,6 +75,12 @@ def register_order(request):
     except ObjectDoesNotExist:
         return Response({"message": "Bank not found"}, status=status.HTTP_404_NOT_FOUND)
 
+    if Order.objects.filter(user=user, completed="pending").exists():
+        if Order.objects.get(user=user, completed="pending").created_at > datetime.now() - timedelta(minutes=5):
+            return Response({"message": "Order register requested recently, please wait 5 minutes"})
+
+        Order.objects.get(user=user, completed="pending").delete()
+
     # Save the order
     order = Order(user=user, description=description, amount=amount, bank=bank)
     order.save()
@@ -96,10 +104,10 @@ def register_order(request):
     # Get the response
     response_data = response.json()
 
-    if response_data.get("errorCode"):
+    if int(response_data.get("errorCode")):
         return Response(response_data, status=status.HTTP_400_BAD_REQUEST)
 
-    order.order_id = response_data['orderId']
+    order.order_id = response_data.get('orderId')
     order.save()
 
     return Response(response_data)
