@@ -1,12 +1,11 @@
-from datetime import datetime, timedelta
+from datetime import timedelta
+from django.utils import timezone
 
 import requests
-from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.views.decorators.csrf import csrf_exempt
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
-from jwcrypto.jwt import JWT
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -76,7 +75,7 @@ def register_order(request):
         return Response({"message": "Bank not found"}, status=status.HTTP_404_NOT_FOUND)
 
     if Order.objects.filter(user=user, status="pending").exists():
-        if Order.objects.get(user=user, status="pending").created_at > datetime.now() - timedelta(minutes=5):
+        if Order.objects.filter(user=user, status="pending").first().created_at > timezone.now() - timedelta(minutes=5):
             return Response({"message": "Order register requested recently, please wait 5 minutes"})
 
         Order.objects.filter(user=user, status="pending").delete()
