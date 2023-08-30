@@ -9,6 +9,7 @@ from rest_framework.response import Response
 
 from config.swagger_parameters import JWT_TOKEN
 from users.models import ReservePhoneNumber, User
+from users.models.functions import get_valid_phone_number
 
 
 @swagger_auto_schema(method='post',
@@ -28,7 +29,7 @@ from users.models import ReservePhoneNumber, User
 @csrf_exempt
 def register_reserve_number(request):
     # Get the data from the request
-    phone_number = request.data.get("phone_number")
+    phone_number = get_valid_phone_number(request.data.get("phone_number"))
 
     # Check if the phone number is already registered
     if User.objects.filter(phone_number=phone_number).exists() or ReservePhoneNumber.objects.filter(
