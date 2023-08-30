@@ -103,9 +103,6 @@ def register_order(request):
     # Get the response
     response_data = response.json()
 
-    if response_data.get("errorCode"):
-        return Response(response_data, status=status.HTTP_400_BAD_REQUEST)
-
     if response_data.get("errorCode") and int(response_data.get("errorCode")):
         return Response(response_data, status=status.HTTP_400_BAD_REQUEST)
 
