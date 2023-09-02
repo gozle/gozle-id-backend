@@ -76,7 +76,7 @@ def register_order(request):
 
     if Order.objects.filter(user=user, status="pending").exists():
         if Order.objects.filter(user=user, status="pending").first().created_at > timezone.now() - timedelta(minutes=5):
-            return Response({"message": "Order register requested recently, please wait 5 minutes"})
+            return Response({"message": "Order register requested recently, please wait 5 minutes"}, status=status.HTTP_429_TOO_MANY_REQUESTS)
 
         Order.objects.filter(user=user, status="pending").delete()
 
