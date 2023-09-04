@@ -96,9 +96,11 @@ def activate_reserve_number(request):
 def deactivate_reserve_number(request):
     user = request.user
     if ReservePhoneNumber.objects.filter(user=user).exists():
-        ReservePhoneNumber.objects.get(user=user).delete()
+        ReservePhoneNumber.objects.filter(user=user).delete()
 
-    return Response({"message": "Deactivated successfully"}, status=status.HTTP_200_OK)
+        return Response({"message": "Deactivated successfully"}, status=status.HTTP_200_OK)
+    else:
+        return Response({"message": "User hasn't reserve phone number"}, status=status.HTTP_404_NOT_FOUND)
 
 
 @swagger_auto_schema(method='get',
