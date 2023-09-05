@@ -9,6 +9,7 @@ from rest_framework.response import Response
 
 from config.swagger_parameters import JWT_TOKEN
 from users.models import Order
+from users.serializers import OrderSerializer
 
 
 @swagger_auto_schema(method='post',
@@ -65,9 +66,6 @@ def order_status(request):
 
     response_data = response.json()
 
-    if response_data.get("errorCode", 0) != 0:
-        return Response(response_data, status=status.HTTP_400_BAD_REQUEST)
-
     if response_data.get("OrderStatus", 0) == 2:
         if order.status != "completed":
             order.status = "completed"
@@ -77,4 +75,6 @@ def order_status(request):
             order.save()
             return Response({"message": "Order accepted successfully"}, status=status.HTTP_200_OK)
         return Response({"message": "Order already accepted"}, status=status.HTTP_202_ACCEPTED)
-    return Response(response_data, status=status.HTTP_400_BAD_REQUEST)
+
+    serializer = OrderSerializer(order)
+    return Response({"message": "Order did not completed", "order": serializer.data}, status=status.HTTP_400_BAD_REQUEST)
