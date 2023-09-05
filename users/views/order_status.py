@@ -53,6 +53,7 @@ def order_status(request):
     except ObjectDoesNotExist:
         return Response({"message": "Order is not found"}, status=status.HTTP_404_NOT_FOUND)
 
+    serializer = OrderSerializer(order)
     request_url = order.bank.status_url
 
     data = {
@@ -73,8 +74,7 @@ def order_status(request):
             user.balance += order.amount / 100
             user.save()
             order.save()
-            return Response({"message": "Order accepted successfully"}, status=status.HTTP_200_OK)
-        return Response({"message": "Order already accepted"}, status=status.HTTP_202_ACCEPTED)
+            return Response({"message": "Order accepted successfully", "order": serializer.data}, status=status.HTTP_200_OK)
+        return Response({"message": "Order already accepted", "order": serializer.data}, status=status.HTTP_202_ACCEPTED)
 
-    serializer = OrderSerializer(order)
     return Response({"message": "Order did not completed", "order": serializer.data}, status=status.HTTP_400_BAD_REQUEST)
