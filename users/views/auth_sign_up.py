@@ -48,10 +48,6 @@ def sign_up(request):
     if phone_number == '':
         return Response({"message": "Phone Number can't be blank"}, status=status.HTTP_403_FORBIDDEN)
 
-    # Check if phone number in reverse phone numbers
-    if User.check_if_in_reserve(phone_number):
-        return Response({"message": "Phone Number is in reserve for another number"}, status=status.HTTP_409_CONFLICT)
-
     # Get or create user
     user = check_user_exists(phone_number)
     if not user:

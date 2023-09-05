@@ -84,12 +84,6 @@ class User(AbstractUser):
         self.avatar = request.FILES.get('avatar', self.avatar)
         self.save()
 
-    @classmethod
-    def check_if_in_reserve(cls, phone_number):
-        if ReservePhoneNumber.objects.filter(phone_number=phone_number).exists():
-            return True
-        return False
-
     # def register_reserve_phone_number(self, phone_number):
     #     rph = ReservePhoneNumber.objects
 
