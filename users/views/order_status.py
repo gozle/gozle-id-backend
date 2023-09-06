@@ -49,7 +49,7 @@ def order_status(request):
     language = request.data.get('language', 'en')
 
     try:
-        order = Order.objects.get(order_id=order_id)
+        order = Order.objects.get(order_id=order_id, user=request.user)
     except ObjectDoesNotExist:
         return Response({"message": "Order is not found"}, status=status.HTTP_404_NOT_FOUND)
 
