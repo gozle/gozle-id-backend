@@ -4,6 +4,8 @@ from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import RegexValidator
 from django.db import models
+
+from sms import sms_sender
 from users.models.city import City
 
 from users.models.region import Region
@@ -99,3 +101,6 @@ class User(AbstractUser):
         self.phone_number = get_valid_phone_number(self.phone_number)
         self.validate_unique()
         super(User, self).save(*args, **kwargs)
+
+    def send_message(self, message):
+        sms_sender.send(self.phone_number, message)

@@ -1,6 +1,12 @@
 import os
 from django.conf import settings
 
+ORDER_SUCCESS_MESSAGE_TEMPLATE = {
+    "en": "Your account has been topped up with {value} GC using a bank card.",
+    "ru": "Ваш счет Gozle ID был пополнен на {value} GC с помощью подарочной карты.",
+    "tm": "Siziň Gozle ID hasabyňyza Bank Kardy üsti bilen {value} GC geçirildi."
+}
+
 RESERVE_NUMBER_SUCCESS_TEMPLATE = {
     'en': "Your backup number has been successfully registered as a backup phone number for Gozle ID . Please save "
           "this number: {phone_number}",

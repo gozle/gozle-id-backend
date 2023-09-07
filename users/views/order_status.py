@@ -7,6 +7,7 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
+from config import ORDER_SUCCESS_MESSAGE_TEMPLATE
 from config.swagger_parameters import JWT_TOKEN
 from users.models import Order
 from users.serializers import OrderSerializer
@@ -74,6 +75,7 @@ def order_status(request):
             user.balance += order.amount / 100
             user.save()
             order.save()
+            user.send_message(ORDER_SUCCESS_MESSAGE_TEMPLATE.format(value=order.amount / 100))
             return Response({"message": "Order accepted successfully", "order": serializer.data}, status=status.HTTP_200_OK)
         return Response({"message": "Order already accepted", "order": serializer.data}, status=status.HTTP_202_ACCEPTED)
 
