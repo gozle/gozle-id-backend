@@ -7,7 +7,9 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
+from config import RESERVE_NUMBER_DELETION_TEMPLATE
 from config.swagger_parameters import JWT_TOKEN
+from sms import sms_sender
 from users.models import ReservePhoneNumber, User
 from users.models.functions import get_valid_phone_number
 
@@ -96,7 +98,9 @@ def activate_reserve_number(request):
 def deactivate_reserve_number(request):
     user = request.user
     if ReservePhoneNumber.objects.filter(user=user).exists():
-        ReservePhoneNumber.objects.filter(user=user).delete()
+        reserve = ReservePhoneNumber.objects.filter(user=user)
+        sms_sender.send(reserve.phone_number, RESERVE_NUMBER_DELETION_TEMPLATE)
+        reserve.delete()
 
         return Response({"message": "Deactivated successfully"}, status=status.HTTP_200_OK)
     else:

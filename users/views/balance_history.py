@@ -4,7 +4,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 from config.swagger_parameters import JWT_TOKEN
-from users.serializers import LoginSerializer, HistorySerializer
+from users.serializers import LoginSerializer, HistorySerializer, OrderSerializer
 
 
 @swagger_auto_schema(method='get',
@@ -22,9 +22,9 @@ def history(request, action):
 
         serializer = LoginSerializer(objects, many=True)
         return Response(serializer.data)
-    elif action == "received":
+    elif action == "balance":
         # Return all received history of user
-        objects = request.user.history.all()
+        objects = request.user.orders.all()
 
-        serializer = HistorySerializer(objects, many=True)
+        serializer = OrderSerializer(objects, many=True)
         return Response(serializer.data)

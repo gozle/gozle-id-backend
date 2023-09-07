@@ -2,9 +2,17 @@ import os
 from django.conf import settings
 
 ORDER_SUCCESS_MESSAGE_TEMPLATE = {
-    "en": "Your account has been topped up with {value} GC using a bank card.",
-    "ru": "Ваш счет Gozle ID был пополнен на {value} GC с помощью подарочной карты.",
-    "tm": "Siziň Gozle ID hasabyňyza Bank Kardy üsti bilen {value} GC geçirildi."
+    "en": 'Your Gozle ID balance has been topped up with {value}GC.',
+    "ru": "Ваш баланс Gozle ID пополнен на сумму {value}GC.",
+    "tm": "Siziň Gozle ID balansyňyz {value}GC köpeldi."
+}
+
+RESERVE_NUMBER_DELETION_TEMPLATE = {
+    'en': "Your number has been deleted as a backup number in Gozle ID if you have not deleted the number, "
+          "contact technical support",
+    "ru": "Ваш номер удален как резервный номер в Gozle ID если вы не удаляли номер, обратитесь в техническую поддержку",
+    "tm": "Gozle ID -de ätiýaçlyk belgisi hökmünde siziň belgiňiz öçürildi, öçürmedik bolsaňyz, tehniki goldaw bilen "
+          "habarlaşmagyňyzy haýyş edýäris",
 }
 
 RESERVE_NUMBER_SUCCESS_TEMPLATE = {
