@@ -98,7 +98,7 @@ def activate_reserve_number(request):
 def deactivate_reserve_number(request):
     user = request.user
     if ReservePhoneNumber.objects.filter(user=user).exists():
-        reserve = ReservePhoneNumber.objects.filter(user=user)
+        reserve = ReservePhoneNumber.objects.get(user=user)
         sms_sender.send(reserve.phone_number, RESERVE_NUMBER_DELETION_TEMPLATE)
         reserve.delete()
 
