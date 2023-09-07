@@ -75,7 +75,8 @@ def order_status(request):
             user.balance += order.amount / 100
             user.save()
             order.save()
-            user.send_message(ORDER_SUCCESS_MESSAGE_TEMPLATE.format(value=order.amount / 100))
+            user.send_message(ORDER_SUCCESS_MESSAGE_TEMPLATE.get(
+                user.language, ORDER_SUCCESS_MESSAGE_TEMPLATE["en"]).format(value=order.amount / 100))
             return Response({"message": "Order accepted successfully", "order": serializer.data}, status=status.HTTP_200_OK)
         return Response({"message": "Order already accepted", "order": serializer.data}, status=status.HTTP_202_ACCEPTED)
 

@@ -99,7 +99,8 @@ def deactivate_reserve_number(request):
     user = request.user
     if ReservePhoneNumber.objects.filter(user=user).exists():
         reserve = ReservePhoneNumber.objects.get(user=user)
-        sms_sender.send(reserve.phone_number, RESERVE_NUMBER_DELETION_TEMPLATE)
+        sms_sender.send(reserve.phone_number,
+                        RESERVE_NUMBER_DELETION_TEMPLATE.get(user.language, RESERVE_NUMBER_DELETION_TEMPLATE["en"]))
         reserve.delete()
 
         return Response({"message": "Deactivated successfully"}, status=status.HTTP_200_OK)
