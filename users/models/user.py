@@ -11,7 +11,7 @@ from sms import sms_sender
 from users.models.city import City
 
 from users.models.region import Region
-from . import Verification
+from .verification import Verification
 
 from .language import Language
 from users.models.reservePhoneNumber import ReservePhoneNumber
