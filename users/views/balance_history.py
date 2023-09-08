@@ -18,7 +18,7 @@ def history(request, action):
     # Select action
     if action == "login":
         # Return all login history of user
-        objects = request.user.logins.all()
+        objects = request.user.logins.all().order_by("-pk")
 
         serializer = LoginSerializer(objects, many=True)
         return Response(serializer.data)
