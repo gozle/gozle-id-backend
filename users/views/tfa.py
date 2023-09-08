@@ -57,10 +57,16 @@ def activate_tfa(request):
 def deactivate_tfa(request):
     # Set two-factor authentication deactivated
     user = request.user
-    user.two_factor_auth = "none"
-    user.save()
+    password = request.data.get('password')
 
-    return Response({'message': 'Two Factor Authentication deactivated successfully'})
+    authenticated = authenticate(username=user.username, password=password)
+
+    if authenticated is not None:
+        user.two_factor_auth = "none"
+        user.save()
+
+        return Response({'message': 'Two Factor Authentication deactivated successfully'})
+    return Response({'message': 'Password is wrong!'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 @swagger_auto_schema(method='post',
