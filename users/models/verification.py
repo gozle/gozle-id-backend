@@ -1,6 +1,6 @@
 from django.db import models
 
-from users.models.user import User
+from .user import User
 
 
 class Verification(models.Model):
