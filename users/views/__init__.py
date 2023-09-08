@@ -39,3 +39,5 @@ from .banks import get_banks
 
 from .get_cities import get_cities
 from .get_regions import get_regions
+
+from .verify_email import verify_email

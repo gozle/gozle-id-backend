@@ -1,7 +1,9 @@
+import random
 import uuid
 
 from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.mail import send_mail
 from django.core.validators import RegexValidator
 from django.db import models
 
@@ -9,6 +11,7 @@ from sms import sms_sender
 from users.models.city import City
 
 from users.models.region import Region
+from . import Verification
 
 from .language import Language
 from users.models.reservePhoneNumber import ReservePhoneNumber
@@ -33,7 +36,10 @@ class User(AbstractUser):
 
     phone_number = models.CharField(
         max_length=30, unique=True, validators=[validate_phone_number])
+
     email = models.TextField(blank=True, null=True)
+    email_verified = models.BooleanField(default=False, blank=True)
+
     device_info = models.CharField(max_length=400, null=True, blank=True)
 
     region = models.ForeignKey('users.Region', blank=True, null=True, on_delete=models.SET_NULL)
@@ -62,7 +68,12 @@ class User(AbstractUser):
         self.first_name = request.data.get('first_name', self.first_name)
         self.last_name = request.data.get('last_name', self.last_name)
         self.birthday = request.data.get('birthday', self.birthday)
-        self.email = request.data.get('email', self.email)
+
+        if request.data.get("email"):
+            self.email = request.data.get('email')
+            self.save()
+            self.add_email()
+
         if request.data.get("region"):
             try:
                 region = Region.objects.get(id=request.data.get("region"))
@@ -101,6 +112,22 @@ class User(AbstractUser):
         self.phone_number = get_valid_phone_number(self.phone_number)
         self.validate_unique()
         super(User, self).save(*args, **kwargs)
+
+    def add_email(self):
+        verification_number = random.randint(10000, 99999)
+        verification = Verification.objects.create(code=verification_number, user=self, type="email")
+
+        self.send_email("verification@gozle.com.tm", "Your Gozle ID email verification code is: " + str(verification_number))
+        verification.save()
+
+    def send_email(self, from_email, message):
+        send_mail(
+            "Gozle ID",
+            str(message),
+            from_email,
+            [self.email],
+            fail_silently=False,
+        )
 
     def send_message(self, message):
         sms_sender.send(self.phone_number, message)

@@ -1,6 +1,7 @@
 from django.urls import path
 
 from users.views import *
+from users.views import verify_email
 
 urlpatterns = [
     path('auth/sign-up', sign_up),
@@ -21,6 +22,8 @@ urlpatterns = [
 
     path('transfer/request', transfer_request),
     path('transfer/verify', transfer_verify),
+
+    path("email/verify", verify_email),
 
     path('history/<str:action>', history),
     path("enter-card", enterCard),
