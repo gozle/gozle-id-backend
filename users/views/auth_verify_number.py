@@ -78,7 +78,7 @@ def verify_number(request):
         # Create a login object to store login history
         login_object = Login()
         login_object.user = user
-        login_object.ip_address, _ = get_client_ip(request)
+        login_object.ip_address, _ = get_client_ip(request, proxy_count=2)
         login_object.browser = request.user_agent.browser.family
         login_object.os = request.user_agent.os.family + " " + request.user_agent.os.version_string
         login_object.device = request.user_agent.device.family
