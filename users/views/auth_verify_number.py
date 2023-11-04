@@ -1,3 +1,4 @@
+import ipware
 from django.utils.crypto import get_random_string
 from django.views.decorators.csrf import csrf_exempt
 from drf_yasg import openapi
@@ -8,8 +9,6 @@ from rest_framework.response import Response
 
 from users.models import Verification, TempToken, Login
 from users.views.functions import get_tokens_for_user, check_user_exists
-from ipware import get_client_ip
-
 
 @swagger_auto_schema(method='post',
                      request_body=openapi.Schema(
@@ -78,7 +77,7 @@ def verify_number(request):
         # Create a login object to store login history
         login_object = Login()
         login_object.user = user
-        login_object.ip_address, _ = get_client_ip(request, proxy_count=2)
+        login_object.ip_address, _ = ipware.get_client_ip(request, proxy_count=2, proxy_order='right-most')
         login_object.browser = request.user_agent.browser.family
         login_object.os = request.user_agent.os.family + " " + request.user_agent.os.version_string
         login_object.device = request.user_agent.device.family
