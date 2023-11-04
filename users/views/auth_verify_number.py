@@ -8,6 +8,7 @@ from rest_framework.response import Response
 
 from users.models import Verification, TempToken, Login
 from users.views.functions import get_tokens_for_user, check_user_exists
+from ipware import get_client_ip
 
 
 @swagger_auto_schema(method='post',
@@ -77,7 +78,7 @@ def verify_number(request):
         # Create a login object to store login history
         login_object = Login()
         login_object.user = user
-        login_object.ip_address = request.META.get('HTTP_X_REAL_IP')
+        login_object.ip_address, _ = get_client_ip(request)
         login_object.browser = request.user_agent.browser.family
         login_object.os = request.user_agent.os.family + " " + request.user_agent.os.version_string
         login_object.device = request.user_agent.device.family
