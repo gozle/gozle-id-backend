@@ -78,11 +78,7 @@ def verify_number(request):
         login_object = Login()
         login_object.user = user
         print(request.META)
-        login_object.ip_address, _ = ipware.get_client_ip(request,
-                                                          proxy_count=2,
-                                                          proxy_order='right-most',
-                                                          request_header_order=['X_FORWARDED_FOR', 'REMOTE_ADDR']
-                                                          )
+        login_object.ip_address, _ = ipware.get_client_ip(request, proxy_count=2)
         login_object.browser = request.user_agent.browser.family
         login_object.os = request.user_agent.os.family + " " + request.user_agent.os.version_string
         login_object.device = request.user_agent.device.family
