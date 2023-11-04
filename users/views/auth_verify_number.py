@@ -77,7 +77,6 @@ def verify_number(request):
         # Create a login object to store login history
         login_object = Login()
         login_object.user = user
-        print(request.META)
         login_object.ip_address, _ = ipware.get_client_ip(request)
         login_object.browser = request.user_agent.browser.family
         login_object.os = request.user_agent.os.family + " " + request.user_agent.os.version_string
