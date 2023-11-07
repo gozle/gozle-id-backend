@@ -66,11 +66,12 @@ For example in Python3:
 For example, if the authorization server URL is https://id.gozle.com.tm/o/authorize then the client will craft a URL like the following and direct the user’s browser to it.
   ```
   https://id.gozle.com.tm/o/authorize?response_type=code
-  &client_id=vW1RcAl7Mb0d5gyHNQIAcH110lWoOW2BmWJIero8
-  &code_challenge=XRi41b-5yHtTojvCpXFpsLUnmGFz6xR15c3vpPANAvM
-  &code_challenge_method=S256
-  &state=x1234zxcghoul
-  &redirect_uri=https://mysite.com/api/auth
+    &client_id=vW1RcAl7Mb0d5gyHNQIAcH110lWoOW2BmWJIero8
+    &code_challenge=XRi41b-5yHtTojvCpXFpsLUnmGFz6xR15c3vpPANAvM
+    &code_challenge_method=S256
+    &state=x1234zxcghoul
+    $scope=videos write
+    &redirect_uri=https://mysite.com/api/auth
   ```
 For the sake of example we used https://mysite.com/api/auth as _redirect_uri_ you will get a Page not found (404) but it worked if you get a url like:
   ```
@@ -99,12 +100,12 @@ Access token and Refresh token is retrieved from https://id.gozle.com.tm/o/token
 Example url:
   ```
   https://id.gozle.com.tm/o/token?response_type=code
-  &client_id={CLIENT_ID}
-  &client_secret={CLIENT_SECRET}
-  &code={CODE}
-  &code_verifier={CODE_VERIFIER}
-  &redirect_uri=https://mysite.com/api/auth
-  &grant_type=authorization_code
+    &client_id={CLIENT_ID}
+    &client_secret={CLIENT_SECRET}
+    &code={CODE}
+    &code_verifier={CODE_VERIFIER}
+    &redirect_uri=https://mysite.com/api/auth
+    &grant_type=authorization_code
   ```
 
 + **CLIENT_ID** - The application’s registered client ID
