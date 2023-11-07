@@ -4,6 +4,19 @@ The OAuth2 provider and REST Api for Gozle ID.
 ## 1. Client Registration
 New application Client can be registered at https://i.gozle.com.tm/o/admin/applications
 
+Create database document for Client with fields:
+  ```
+  Client:
+    client_id - Client ID obtained from OAuth provider
+    client_secret - Client Secret obtained from OAuth provider
+    
+    callback_uri - example: https://musite.com/api/auth/callback
+    
+    login_uri - https://id.gozle.com.tm/oauth/v2/auth
+    token_uri - https://i.gozle.com.tm/o/token
+    resource_uri - https://i.gozle.com.tm/api/resource
+  ```
+
 Extract and save _client_id_ and _client_secret_ to database.
 
 ## 2. The Authorization Request
@@ -63,9 +76,9 @@ For example in Python3:
 + #### code_challenge_method
   Either _plain_ or _S256_, depending on whether the challenge is the plain verifier string or the SHA256 hash of the string.
 
-For example, if the authorization server URL is https://id.gozle.com.tm/o/authorize then the client will craft a URL like the following and direct the user’s browser to it.
+For example, if the authorization server URL is https://i.gozle.com.tm/o/authorize then the client will craft a URL like the following and direct the user’s browser to it.
   ```
-  https://id.gozle.com.tm/o/authorize?response_type=code
+  https://i.gozle.com.tm/o/authorize?response_type=code
     &client_id=vW1RcAl7Mb0d5gyHNQIAcH110lWoOW2BmWJIero8
     &code_challenge=XRi41b-5yHtTojvCpXFpsLUnmGFz6xR15c3vpPANAvM
     &code_challenge_method=S256
@@ -95,11 +108,11 @@ A complete access token request will include the following parameters:
   code_verifier – The code verifier for the PKCE request, that the app originally generated before the authorization request.
   ```
 
-Access token and Refresh token is retrieved from https://id.gozle.com.tm/o/token
+Access token and Refresh token is retrieved from https://i.gozle.com.tm/o/token
 
 Example url:
   ```
-  https://id.gozle.com.tm/o/token?response_type=code
+  https://i.gozle.com.tm/o/token?response_type=code
     &client_id={CLIENT_ID}
     &client_secret={CLIENT_SECRET}
     &code={CODE}
@@ -132,7 +145,7 @@ Pass _access_token_ in Authorization header:
   ```
   curl \
       -H "Authorization: Bearer jooqrnOrNa0BrNWlg68u9sl6SkdFZg" \
-      -X GET https://id.gozle.com.tm/api/get_user?phone=+xxxxxxxx
+      -X GET https://i.gozle.com.tm/api/get_user?phone=+xxxxxxxx
   ```
 ## 5. Refresh access_token with refresh_token
 
@@ -150,7 +163,7 @@ If you’re using a JSON-based API, then it will likely return a JSON error resp
 
   You can refresh _access_token_ with request like this:
   ```
-  https://id.gozle.com.tm/o/token?grant_type=refresh_token
+  https://i.gozle.com.tm/o/token?grant_type=refresh_token
     &refresh_token=xxxxxxxxxxx
     &client_id=xxxxxxxxxx
     &client_secret=xxxxxxxxxx
