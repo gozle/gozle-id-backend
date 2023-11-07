@@ -32,6 +32,7 @@ def verify_and_delete(user, type):
     try:
         verification = Verification.objects.get(user=user, type=type)
         if verification.created_at > timezone.now() - timezone.timedelta(seconds=60):
+            print(verification.created_at, timezone.now() - timezone.timedelta(seconds=60))
             return False
         print('delete', verification)
         Verification.objects.filter(user=user, type=type).delete()
