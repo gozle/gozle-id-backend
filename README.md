@@ -4,7 +4,7 @@ The OAuth2 provider and REST Api for Gozle ID.
 ## 1. Client Registration
 New application Client can be registered at https://i.gozle.com.tm/o/admin/applications
 
-Extract and save to database _client_id_ and _client_secret_ from response.
+Extract and save _client_id_ and _client_secret_ to database.
 
 ## 2. The Authorization Request
 Clients will direct a user’s browser to the authorization server to begin the OAuth process.
@@ -113,4 +113,37 @@ Example url:
 + **CODE** - _code_ returned in step 3
 + **CODE_VERIFIER** - _code_verifier_ generated in step 1
 
-## 4.
+If everything went good response will be like this:
+  ```
+  {
+    "access_token": "jooqrnOrNa0BrNWlg68u9sl6SkdFZg",
+    "expires_in": 36000,
+    "token_type": "Bearer",
+    "scope": "read write",
+    "refresh_token": "HNvDQjjsnvDySaK0miwG4lttJEl9yD"
+  }
+  ```
+
+Save _access_token_ and _refresh_token_ to client database.
+
+## 4. Accesing API with access_token
+
+Pass _access_token_ in Authorization header:
+  ```
+  curl \
+      -H "Authorization: Bearer jooqrnOrNa0BrNWlg68u9sl6SkdFZg" \
+      -X GET https://id.gozle.com.tm/api/get_user?phone=+xxxxxxxx
+  ```
+## 5. Refresh access_token with refresh_token
+
+If you’re using a JSON-based API, then it will likely return a JSON error response with the invalid_token error. In any case, the WWW-Authenticate header will also have the invalid_token error code.
+  ```
+  HTTP/1.1 401 Unauthorized
+  WWW-Authenticate: Bearer error="invalid_token"
+  error_description="The access token expired"
+  Content-type: application/json
+  {
+    "error": "invalid_token",
+    "error_description": "The access token expired"
+  }
+  ```
