@@ -68,7 +68,7 @@ def sign_up(request):
         return Response({"message": "Verification code is sent. Please wait 1 minutes before try again!"},
                         status=status.HTTP_403_FORBIDDEN)
 
-    verification = Verification(code=verification_number, user=user, type="phone").save()
+    Verification(code=verification_number, user=user, type="phone").save()
 
     # Send verification code to user
     sms_sender.send(phone_number, 'Gozle ID code: ' + str(verification_number))
