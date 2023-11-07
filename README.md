@@ -70,7 +70,7 @@ For example, if the authorization server URL is https://id.gozle.com.tm/o/author
     &code_challenge=XRi41b-5yHtTojvCpXFpsLUnmGFz6xR15c3vpPANAvM
     &code_challenge_method=S256
     &state=x1234zxcghoul
-    $scope=videos write
+    $scope=photos videos
     &redirect_uri=https://mysite.com/api/auth
   ```
 For the sake of example we used https://mysite.com/api/auth as _redirect_uri_ you will get a Page not found (404) but it worked if you get a url like:
