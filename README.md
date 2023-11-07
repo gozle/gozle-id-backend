@@ -9,6 +9,35 @@ Extract and save to database _client_id_ and _client_secret_ from response.
 ## 2. The Authorization Request
 Clients will direct a user’s browser to the authorization server to begin the OAuth process.
 
+The client creates a "_code_verifier_" for each Authorization Request, in the following manner:
+  ```
+  code_verifier = high-entropy cryptographic random STRING
+    using the unreserved characters [A-Z] / [a-z] / [0-9] / "-" / "." / "_" / "~"
+    with a minimum length of 43 characters and a maximum length of 128 characters
+  ```
+
+The client then creates a code challenge derived from the code
+verifier by using one of the following transformations on the code
+verifier:
+  + plain
+      - code_challenge = code_verifier
+  
+  + S256
+      - code_challenge = BASE64URL-ENCODE(SHA256(ASCII(code_verifier)))
+
+For example in Python3:
+  ```
+  import random
+  import string
+  import base64
+  import hashlib
+  
+  code_verifier = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(random.randint(43, 128)))
+  
+  code_challenge = hashlib.sha256(code_verifier.encode('utf-8')).digest()
+  code_challenge = base64.urlsafe_b64encode(code_challenge).decode('utf-8').replace('=', '')
+  ```
+
 ### Request Parameters
 
 The following parameters are used to begin the authorization request. For example, if the authorization server URL is https://id.gozle.com.tm/o/authorize then the client will craft a URL like the following and direct the user’s browser to it:
@@ -44,41 +73,13 @@ The following parameters are used to begin the authorization request. For exampl
 + #### code_challenge_method
   Either _plain_ or _S256_, depending on whether the challenge is the plain verifier string or the SHA256 hash of the string.
 
-The client creates a "_code_verifier_" for each Authorization Request, in the following manner:
-  ```
-  code_verifier = high-entropy cryptographic random STRING
-    using the unreserved characters [A-Z] / [a-z] / [0-9] / "-" / "." / "_" / "~"
-    with a minimum length of 43 characters and a maximum length of 128 characters
-  ```
-
-The client then creates a code challenge derived from the code
-verifier by using one of the following transformations on the code
-verifier:
-  + plain
-      - code_challenge = code_verifier
-  
-  + S256
-      - code_challenge = BASE64URL-ENCODE(SHA256(ASCII(code_verifier)))
-
-For example in Python3:
-  ```
-  import random
-  import string
-  import base64
-  import hashlib
-  
-  code_verifier = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(random.randint(43, 128)))
-  
-  code_challenge = hashlib.sha256(code_verifier.encode('utf-8')).digest()
-  code_challenge = base64.urlsafe_b64encode(code_challenge).decode('utf-8').replace('=', '')
-  ```
-
 Full url would look like this
   ```
   https://id.gozle.com.tm/o/authorize?response_type=code
+  &client_id=vW1RcAl7Mb0d5gyHNQIAcH110lWoOW2BmWJIero8
   &code_challenge=XRi41b-5yHtTojvCpXFpsLUnmGFz6xR15c3vpPANAvM
   &code_challenge_method=S256
-  &client_id=vW1RcAl7Mb0d5gyHNQIAcH110lWoOW2BmWJIero8
+  &state=x1234zxcghoul
   &redirect_uri=https://mysite.com/api/auth
   ```
 For the sake of example we used https://mysite.com/api/auth as _redirect_uri_ you will get a Page not found (404) but it worked if you get a url like:
@@ -88,7 +89,7 @@ For the sake of example we used https://mysite.com/api/auth as _redirect_uri_ yo
 
 This is the OAuth2 provider trying to give you a code. in this case ***uVqLxiHDKIirldDZQfSnDsmYW1Abj2***.
 
-## 4. Authorization Code Exchange
+## 3. Authorization Code Exchange
 The application will then exchange the authorization code for an access token. In addition to the parameters defined in Authorization Code Request , the client will also send the code_verifier parameter. 
 
 Requst handler at https://mysite.com/api/auth should get Authorization Code from STEP 3 and send request to OAuth2 provider with that code.
