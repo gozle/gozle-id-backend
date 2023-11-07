@@ -10,9 +10,9 @@ Create database document for Client with fields:
     client_id - Client ID obtained from OAuth provider
     client_secret - Client Secret obtained from OAuth provider
     
-    callback_uri - example: https://musite.com/api/auth/callback
+    callback_uri - example: https://mysite.com/api/auth/callback
     
-    login_uri - https://id.gozle.com.tm/oauth/v2/auth
+    login_uri - https://id.gozle.com.tm/api/auth
     token_uri - https://i.gozle.com.tm/o/token
     resource_uri - https://i.gozle.com.tm/api/resource
   ```
