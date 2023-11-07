@@ -147,3 +147,11 @@ If you’re using a JSON-based API, then it will likely return a JSON error resp
     "error_description": "The access token expired"
   }
   ```
+
+  You can refresh _access_token_ with request like this:
+  ```
+  https://id.gozle.com.tm/o/token?grant_type=refresh_token
+    &refresh_token=xxxxxxxxxxx
+    &client_id=xxxxxxxxxx
+    &client_secret=xxxxxxxxxx
+  ```
