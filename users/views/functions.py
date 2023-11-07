@@ -38,6 +38,7 @@ def verify_and_delete(user, type):
         Verification.objects.filter(user=user, type=type).delete()
         return True
     except ObjectDoesNotExist:
+        print('Doest exist')
         return True
 
 
