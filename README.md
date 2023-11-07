@@ -40,16 +40,6 @@ For example in Python3:
 
 ### Request Parameters
 
-The following parameters are used to begin the authorization request. For example, if the authorization server URL is https://id.gozle.com.tm/o/authorize then the client will craft a URL like the following and direct the user’s browser to it:
-  ```
-  https://id.gozle.com.tm/o/authorize?response_type=code
-  &client_id=vW1RcAl7Mb
-  &redirect_uri=https://mysite.com/api/auth
-  &state=x1234zxcghoul
-  &code_challenge=XRi41b-5yHtTojvCpXFpsLUnmGFz6xR15c3vpPANAvM
-  &code_challenge_method=S256
-  ```
-
 + #### response_type
   _response_type_ will be set to code, indicating that the application expects to receive an _authorization code_ if successful.
 
@@ -73,7 +63,7 @@ The following parameters are used to begin the authorization request. For exampl
 + #### code_challenge_method
   Either _plain_ or _S256_, depending on whether the challenge is the plain verifier string or the SHA256 hash of the string.
 
-Full url would look like this
+For example, if the authorization server URL is https://id.gozle.com.tm/o/authorize then the client will craft a URL like the following and direct the user’s browser to it.
   ```
   https://id.gozle.com.tm/o/authorize?response_type=code
   &client_id=vW1RcAl7Mb0d5gyHNQIAcH110lWoOW2BmWJIero8
