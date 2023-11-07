@@ -31,12 +31,10 @@ def check_user_exists(phone_number):
 def verify_and_delete(user, type):
     try:
         verification = Verification.objects.get(user=user, type=type)
-
-        if verification.created_at > timezone.now() - timezone.timedelta(minutes=1):
-            Verification.objects.filter(user=user).delete()
+        if verification.created_at > timezone.now() - timezone.timedelta(seconds=60):
             return False
-
-        Verification.objects.filter(user=user).delete()
+        print('delete', verification)
+        Verification.objects.filter(user=user, type=type).delete()
         return True
     except ObjectDoesNotExist:
         return True
