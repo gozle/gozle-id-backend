@@ -22,6 +22,7 @@ from .balance_history import history
 from .oauth2_resource import resource
 from .oauth2_get_client import get_client
 from .oauth2_login import oauth_login
+from .oauth2_logout import oauth_logout
 from .oauth2_get_token import get_token
 
 from .payment_register import register_payment
