@@ -15,6 +15,9 @@ Create database document for Client with fields:
     login_uri - https://id.gozle.com.tm/api/auth
     token_uri - https://i.gozle.com.tm/o/token
     resource_uri - https://i.gozle.com.tm/api/resource
+    
+    access_token - Token to work with RestAPI
+    refresh_token - Token to refresh access_token
   ```
 
 Extract and save _client_id_ and _client_secret_ to database.
