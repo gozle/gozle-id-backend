@@ -7,9 +7,6 @@ New application Client can be registered at https://i.gozle.com.tm/o/admin/appli
 Create database document for Client with fields:
   ```
   Client:
-    client_id - Client ID obtained from OAuth provider
-    client_secret - Client Secret obtained from OAuth provider
-    
     callback_uri - example: https://mysite.com/api/auth/callback
     
     login_uri - https://id.gozle.com.tm/api/auth
@@ -107,7 +104,6 @@ A complete access token request will include the following parameters:
   code – The client will send the authorization code it obtained in the redirect
   redirect_uri – The redirect URL that was used in the initial authorization request
   client_id – The application’s registered client ID
-  client_secret – The application’s registered client secret
   code_verifier – The code verifier for the PKCE request, that the app originally generated before the authorization request.
   ```
 
@@ -115,9 +111,8 @@ Access token and Refresh token is retrieved from https://i.gozle.com.tm/o/token
 
 Example url:
   ```
-  https://i.gozle.com.tm/o/token?response_type=code
+  https://id.gozle.com.tm/oauth/v2/auth?response_type=code
     &client_id={CLIENT_ID}
-    &client_secret={CLIENT_SECRET}
     &code={CODE}
     &code_verifier={CODE_VERIFIER}
     &redirect_uri=https://mysite.com/api/auth
@@ -125,7 +120,6 @@ Example url:
   ```
 
 + **CLIENT_ID** - The application’s registered client ID
-+ **CLIENT_SECRET** - The application’s registered client ID
 + **CODE** - _code_ returned in step 3
 + **CODE_VERIFIER** - _code_verifier_ generated in step 1
 
@@ -169,7 +163,6 @@ If you’re using a JSON-based API, then it will likely return a JSON error resp
   https://i.gozle.com.tm/o/token?grant_type=refresh_token
     &refresh_token=xxxxxxxxxxx
     &client_id=xxxxxxxxxx
-    &client_secret=xxxxxxxxxx
   ```
 
 For more info visit: https://www.oauth.com/
