@@ -1,4 +1,4 @@
-from django.contrib.auth import login
+from django.contrib.auth import login, logout
 from django.shortcuts import redirect
 from django.views.decorators.csrf import csrf_exempt
 from drf_yasg import openapi
@@ -41,4 +41,25 @@ def oauth_login(request):
 
     # Login user and redirect to the oauth provider
     login(request, user)
+    return redirect(get_url_from_dict(get_parameters))
+
+
+@api_view(["GET"])
+@permission_classes([AllowAny])
+@csrf_exempt
+def oauth_logout(request):
+    """
+    This function is used to log out a user
+    """
+    token = request.GET.get("token")
+    if not OneTimeToken.objects.filter(token=token).exists():
+        return Response({"message": "Token is not valid."}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Collect GET parameters
+    get_parameters = {}
+    for key, value in request.GET.items():
+        if not key == "token":
+            get_parameters[key] = value
+
+    logout(request)
     return redirect(get_url_from_dict(get_parameters))
