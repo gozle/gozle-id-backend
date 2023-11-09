@@ -49,7 +49,7 @@ def sign_up(request):
         return Response({"message": "Phone Number can't be blank"}, status=status.HTTP_403_FORBIDDEN)
 
     # Exception for guys at Google
-    if phone_number == '+99312345678':
+    if phone_number == '+99366666666':
         return Response({'message': 'OK', 'status': 200})
 
     # Get existing user or create new
