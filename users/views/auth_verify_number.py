@@ -1,4 +1,5 @@
 import ipware
+from django.conf import settings
 from django.utils.crypto import get_random_string
 from django.views.decorators.csrf import csrf_exempt
 from drf_yasg import openapi
@@ -60,7 +61,9 @@ def verify_number(request):
     user.save()
 
     # Delete verification code
-    Verification.objects.get(code=code).delete()
+    # Exception for admin
+    if not user.phone_number == settings.ADMIN_PHONE:
+        Verification.objects.get(code=code).delete()
 
     # Check if 2FA is enabled
     if user.two_factor_auth == "password":
