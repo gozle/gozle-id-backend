@@ -58,7 +58,7 @@ def update(request):
     user = request.user
 
     # Check if user with this username already exists
-    if User.objects.exclude(id=user.id).filter(username=request.data.get('username')).exists():
+    if User.objects.exclude(id=user.id).filter(username=request.POST.get('username')).exists():
         return Response({'username': "Already exists"}, status=status.HTTP_409_CONFLICT)
 
     # TODO: Reserve phone number
