@@ -116,7 +116,7 @@ class User(AbstractUser):
     def add_email(self):
         verification_number = random.randint(10000, 99999)
         try:
-            verification = self.verifications.objects.get(type="email")
+            verification = self.verifications.get(type="email")
             verification.delete()
         except ObjectDoesNotExist:
             pass
