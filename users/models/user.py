@@ -115,6 +115,11 @@ class User(AbstractUser):
 
     def add_email(self):
         verification_number = random.randint(10000, 99999)
+        try:
+            verification = self.verifications.objects.get(type="email")
+            verification.delete()
+        except ObjectDoesNotExist:
+            pass
         verification = Verification(code=verification_number, user=self, type="email")
 
         self.send_email("verification@gozle.com.tm", "Your Gozle ID email verification code is: " + str(verification_number))
