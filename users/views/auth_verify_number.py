@@ -53,7 +53,11 @@ def verify_number(request):
         return Response({'message': 'User Not Found'}, status=status.HTTP_404_NOT_FOUND)
 
     # Check if the verification code is valid
-    if not user.verifications or user.verifications.get(code) != "phone" or user.verifications.code != code:
+    if not user.verifications:
+        return Response({'status': False, 'Error': 'Invalid Code'}, status=status.HTTP_401_UNAUTHORIZED)
+
+    verification = user.verifications.get(code)
+    if verification.type != "phone" or verification.code != code:
         return Response({'status': False, 'Error': 'Invalid Code'}, status=status.HTTP_401_UNAUTHORIZED)
 
     # Activate user
