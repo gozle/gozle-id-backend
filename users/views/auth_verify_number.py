@@ -56,7 +56,7 @@ def verify_number(request):
     if not user.verifications:
         return Response({'status': False, 'Error': 'Invalid Code'}, status=status.HTTP_401_UNAUTHORIZED)
 
-    verification = user.verifications.objects.get(code)
+    verification = user.verifications.get(code)
     if verification.type != "phone" or verification.code != code:
         return Response({'status': False, 'Error': 'Invalid Code'}, status=status.HTTP_401_UNAUTHORIZED)
 
