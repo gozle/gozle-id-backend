@@ -122,7 +122,8 @@ class User(AbstractUser):
             pass
         verification = Verification(code=verification_number, user=self, type="email")
 
-        self.send_email("verification@gozle.com.tm", "Your Gozle ID email verification code is: " + str(verification_number))
+        self.send_email("verification@gozle.com.tm",
+                        "Your Gozle ID email verification code is: " + str(verification_number))
         verification.save()
 
     def send_email(self, from_email, message):
