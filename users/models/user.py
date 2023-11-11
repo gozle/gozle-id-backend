@@ -115,7 +115,7 @@ class User(AbstractUser):
 
     def add_email(self):
         verification_number = random.randint(10000, 99999)
-        verification = Verification.objects.create(code=verification_number, user=self, type="email")
+        verification = Verification(code=verification_number, user=self, type="email")
 
         self.send_email("verification@gozle.com.tm", "Your Gozle ID email verification code is: " + str(verification_number))
         verification.save()

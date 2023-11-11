@@ -63,6 +63,7 @@ def verify_number(request):
     # Delete verification code
     # Exception for admin
     if not user.phone_number == settings.ADMIN_PHONE:
+        print('Deleted', user.phone_number, code)
         Verification.objects.get(code=code).delete()
 
     # Check if 2FA is enabled
