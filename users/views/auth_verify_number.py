@@ -60,7 +60,10 @@ def verify_number(request):
     user.save()
 
     # Delete verification code
-    Verification.objects.get(code=code).delete()
+    try:
+        Verification.objects.get(code=code).delete()
+    except:
+        pass
 
     # Check if 2FA is enabled
     if user.two_factor_auth == "password":
