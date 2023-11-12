@@ -1,3 +1,5 @@
+import ipware
+from django.conf import settings
 from django.utils.crypto import get_random_string
 from django.views.decorators.csrf import csrf_exempt
 from drf_yasg import openapi
@@ -8,7 +10,6 @@ from rest_framework.response import Response
 
 from users.models import Verification, TempToken, Login
 from users.views.functions import get_tokens_for_user, check_user_exists
-
 
 @swagger_auto_schema(method='post',
                      request_body=openapi.Schema(
@@ -52,7 +53,11 @@ def verify_number(request):
         return Response({'message': 'User Not Found'}, status=status.HTTP_404_NOT_FOUND)
 
     # Check if the verification code is valid
-    if not user.verification or user.verification.type != "phone" or user.verification.code != code:
+    if not user.verifications:
+        return Response({'status': False, 'Error': 'Invalid Code'}, status=status.HTTP_401_UNAUTHORIZED)
+
+    verification = user.verifications.get(code=code)
+    if verification.type != "phone" or verification.code != code:
         return Response({'status': False, 'Error': 'Invalid Code'}, status=status.HTTP_401_UNAUTHORIZED)
 
     # Activate user
@@ -60,10 +65,13 @@ def verify_number(request):
     user.save()
 
     # Delete verification code
-    try:
-        Verification.objects.get(code=code).delete()
-    except:
-        pass
+    # Exception for admin
+    if not user.phone_number == settings.ADMIN_PHONE:
+        print('Deleted', user.phone_number, code)
+        try:
+            Verification.objects.get(code=code).delete()
+        except:
+            pass
 
     # Check if 2FA is enabled
     if user.two_factor_auth == "password":
@@ -80,7 +88,7 @@ def verify_number(request):
         # Create a login object to store login history
         login_object = Login()
         login_object.user = user
-        login_object.ip_address = request.META.get('HTTP_X_REAL_IP')
+        login_object.ip_address, _ = ipware.get_client_ip(request)
         login_object.browser = request.user_agent.browser.family
         login_object.os = request.user_agent.os.family + " " + request.user_agent.os.version_string
         login_object.device = request.user_agent.device.family

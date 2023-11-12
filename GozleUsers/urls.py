@@ -37,24 +37,24 @@ schema_view = get_schema_view(
 )
 
 urlpatterns = [
-                  # Add media urls here
-                  re_path(r'^api/media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
+    # Add media urls here
+    re_path(r'^api/media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
 
-                  # OAuth 2.0 urls here
-                  path('o/', include(('users.oauth2_urls', 'oauth2'), namespace='oauth2_provider')),
+    # OAuth 2.0 urls here
+    path('o/', include(('users.oauth2_urls', 'oauth2'), namespace='oauth2_provider')),
 
-                  # My urls here
-                  path('api/', include('users.urls')),
+    # My urls here
+    path('api/', include('users.urls')),
 
-                  # Simple JWT urls here
-                  path('api/token/refresh/', TokenRefreshView.as_view()),
-                  path('api/token/verify/', TokenVerifyView.as_view()),
+    # Simple JWT urls here
+    path('api/token/refresh/', TokenRefreshView.as_view()),
+    path('api/token/verify/', TokenVerifyView.as_view()),
 
-                  # Django Admin urls here
-                  path('api/admin/', admin.site.urls),
+    # Django Admin urls here
+    path('api/admin/', admin.site.urls),
 
-                  # Swagger urls here
-                  path('api/swagger<format>/', schema_view.without_ui(cache_timeout=0), name='schema-json'),
-                  path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
-                  path('api/redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
-              ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    # Swagger urls here
+    path('api/swagger<format>/', schema_view.without_ui(cache_timeout=0), name='schema-json'),
+    path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+    path('api/redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

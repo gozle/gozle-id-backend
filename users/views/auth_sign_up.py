@@ -1,5 +1,6 @@
 import random
 
+from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
@@ -48,7 +49,11 @@ def sign_up(request):
     if phone_number == '':
         return Response({"message": "Phone Number can't be blank"}, status=status.HTTP_403_FORBIDDEN)
 
-    # Get or create user
+    # Exception for guys at Google
+    if phone_number == settings.ADMIN_PHONE:
+        return Response({'message': 'OK', 'status': 200})
+
+    # Get existing user or create new
     user = check_user_exists(phone_number)
     if not user:
         user = User()
@@ -68,7 +73,7 @@ def sign_up(request):
         return Response({"message": "Verification code is sent. Please wait 1 minutes before try again!"},
                         status=status.HTTP_403_FORBIDDEN)
 
-    verification = Verification(code=verification_number, user=user).save()
+    Verification(code=verification_number, user=user, type="phone").save()
 
     # Send verification code to user
     sms_sender.send(phone_number, 'Gozle ID code: ' + str(verification_number))

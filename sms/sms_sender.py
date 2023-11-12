@@ -14,14 +14,17 @@ SECRET = b'P7t+1fw0VzRZllYhsP5mFMsu1iOff7YACdc3LLW4IQA='
 #DEST = '99361960135'
 #TEXT = 'test'
 
+
 def get_cleaned_phone_number(number):
     return number[1:] if number[0] == '+' else number
+
 
 def generate_hmac(key, message):
     key = base64.b64decode(key)
     msg = message.encode('utf-8')
     h = hmac.new(key, msg, hashlib.sha256).digest()
     return base64.b64encode(h)
+
 
 def send_message(user, msg_id, dest, text, secret):
     ts = int(time.time())
@@ -48,12 +51,14 @@ def check_sms_status(user, msg_ids, secret):
         'hmac': req_hmac
     })
 
+
 def send(dest, text):
     dest = get_cleaned_phone_number(dest)
     msg_id = uuid.uuid4()
     rv = send_message(user=USER, msg_id=uuid.uuid4(), dest=dest, text=text, secret=SECRET)
 #    rv = check_sms_status(USER, ['77af938b-915a-40eb-bb57-40d3a26776cb'], SECRET)
     print(rv.status_code, rv.content)
+
 
 #import threading
 #if __name__ == '__main__':

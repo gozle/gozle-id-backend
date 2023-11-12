@@ -31,6 +31,7 @@ urlpatterns = [
     path('resource', resource),
     path('get/client/', get_client),
     path('login/', oauth_login),
+    path('logout/', oauth_logout),
     path('get-oauth-token', get_token),
 
     path('payment/register', register_payment),

@@ -16,6 +16,8 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+ADMIN_PHONE = '+99367777777'
+
 MERCHANT_USERNAME = 'horjun_gozle'
 MERCHANT_PASSWORD = 'horjun_gozle1'
 
