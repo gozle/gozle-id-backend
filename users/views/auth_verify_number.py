@@ -71,7 +71,11 @@ def verify_number(request):
         try:
             Verification.objects.get(code=code).delete()
         except:
-            pass
+            try:
+                Verification.objects.filter(user=user).delete()
+            except:
+                pass
+
 
     # Check if 2FA is enabled
     if user.two_factor_auth == "password":
