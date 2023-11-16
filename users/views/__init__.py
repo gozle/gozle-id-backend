@@ -42,3 +42,4 @@ from .get_cities import get_cities
 from .get_regions import get_regions
 
 from .verify_email import verify_email
+from .custom_refresh_token import CustomTokenRefreshView
