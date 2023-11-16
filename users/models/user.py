@@ -2,7 +2,7 @@ import random
 import uuid
 
 from django.contrib.auth.models import AbstractUser
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.core.mail import send_mail
 from django.core.validators import RegexValidator
 from django.db import models
@@ -95,7 +95,13 @@ class User(AbstractUser):
             except ObjectDoesNotExist:
                 pass
         self.avatar = request.FILES.get('avatar', self.avatar)
-        self.save()
+        try:
+            self.full_clean()
+        except ValidationError:
+            return False
+        else:
+            # Validation is ok we will save the instance
+            self.save()
 
     # def register_reserve_phone_number(self, phone_number):
     #     rph = ReservePhoneNumber.objects
