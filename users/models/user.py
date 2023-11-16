@@ -111,7 +111,7 @@ class User(AbstractUser):
             except ObjectDoesNotExist:
                 pass
         self.phone_number = get_valid_phone_number(self.phone_number)
-        self.full_clean()
+        self.validate_unique()
         super(User, self).save(*args, **kwargs)
 
     def add_email(self):
