@@ -95,13 +95,8 @@ class User(AbstractUser):
             except ObjectDoesNotExist:
                 pass
         self.avatar = request.FILES.get('avatar', self.avatar)
-        try:
-            self.full_clean()
-        except ValidationError:
-            return False
-        else:
-            # Validation is ok we will save the instance
-            self.save()
+
+        self.save()
 
     # def register_reserve_phone_number(self, phone_number):
     #     rph = ReservePhoneNumber.objects
@@ -116,7 +111,7 @@ class User(AbstractUser):
             except ObjectDoesNotExist:
                 pass
         self.phone_number = get_valid_phone_number(self.phone_number)
-        self.validate_unique()
+        self.full_clean()
         super(User, self).save(*args, **kwargs)
 
     def add_email(self):
