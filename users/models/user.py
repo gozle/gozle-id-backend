@@ -2,19 +2,14 @@ import random
 import uuid
 
 from django.contrib.auth.models import AbstractUser
-from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import send_mail
 from django.core.validators import RegexValidator
 from django.db import models
 
 from sms import sms_sender
-from users.models.city import City
-
-from users.models.region import Region
 from .verification import Verification
-
 from .language import Language
-from users.models.reservePhoneNumber import ReservePhoneNumber
 from users.models.validators import validate_names, validate_phone_number
 from users.models.functions import get_valid_phone_number
 
@@ -62,47 +57,6 @@ class User(AbstractUser):
         if int(amount) > self.balance:
             return False
         return True
-
-    def update(self, request):
-        self.username = request.data.get('username', self.username)
-        self.first_name = request.data.get('first_name', self.first_name)
-        self.last_name = request.data.get('last_name', self.last_name)
-        self.birthday = request.data.get('birthday', self.birthday)
-
-        try:
-            validate_names(self.first_name)
-            validate_names(self.last_name)
-        except ValidationError:
-            return
-
-        if request.data.get("email"):
-            self.email = request.data.get('email')
-            self.save()
-            self.add_email()
-
-        if request.data.get("region"):
-            try:
-                region = Region.objects.get(id=request.data.get("region"))
-                self.region = region
-            except ObjectDoesNotExist:
-                pass
-        if request.data.get("city"):
-            try:
-                city = City.objects.get(id=request.data.get("city"))
-                self.city = city
-            except ObjectDoesNotExist:
-                pass
-        self.theme = request.data.get("theme", self.theme)
-        self.gender = request.data.get("gender", self.gender)
-        if request.data.get("language"):
-            try:
-                language = Language.objects.get(id=request.data.get("language"))
-                self.language = language
-            except ObjectDoesNotExist:
-                pass
-        self.avatar = request.FILES.get('avatar', self.avatar)
-
-        self.save()
 
     # def register_reserve_phone_number(self, phone_number):
     #     rph = ReservePhoneNumber.objects
