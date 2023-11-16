@@ -14,6 +14,7 @@ class CustomTokenRefreshSerializer(TokenRefreshSerializer):
     error_msg = 'No active account found with the given credentials'
 
     def validate(self, attrs):
+        print('GELLOOOOOO')
         token_payload = token_backend.decode(attrs['refresh'])
         try:
             user = get_user_model().objects.get(pk=token_payload['user_id'])
