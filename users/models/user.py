@@ -69,8 +69,11 @@ class User(AbstractUser):
         self.last_name = request.data.get('last_name', self.last_name)
         self.birthday = request.data.get('birthday', self.birthday)
 
-        validate_names(self.first_name)
-        validate_names(self.last_name)
+        try:
+            validate_names(self.first_name)
+            validate_names(self.last_name)
+        except ValidationError:
+            return
 
         if request.data.get("email"):
             self.email = request.data.get('email')
