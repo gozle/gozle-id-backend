@@ -6,6 +6,7 @@ from django.core.exceptions import ValidationError
 # Function to validate name
 def validate_names(value):
     pattern = r'^[\w\s]+$'
+    print(emoji.emoji_count(value))
     if emoji.emoji_count(value):
         raise ValidationError('Name cannot contain emojis')
     if not re.match(pattern, value):
