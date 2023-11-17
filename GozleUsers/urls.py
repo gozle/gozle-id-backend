@@ -22,7 +22,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.views.static import serve
 from rest_framework_simplejwt.views import token_refresh, token_verify
-from users.views import refresh_token, CustomTokenRefreshView
+from users.views import CustomTokenRefreshView
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -49,9 +49,8 @@ urlpatterns = [
 
     # Simple JWT urls here
     path('api/token/refresh/', CustomTokenRefreshView.as_view(), name='refresh-token'),
-    # path('api/token/refresh/', refresh_token),
-    # path('api/token/_refresh/', token_refresh, name="refresh-token"),
-    path('api/token/verify/', token_verify),
+    # path('api/token/refresh/', token_refresh, name="refresh-token"),
+    path('api/token/verify/', token_verify, name="verify-token"),
 
     # Django Admin urls here
     path('api/admin/', admin.site.urls),

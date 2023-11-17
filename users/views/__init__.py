@@ -43,5 +43,4 @@ from .get_regions import get_regions
 
 from .verify_email import verify_email
 
-from .oauth2_refresh_token import refresh_token
 from .custom_refresh_token import CustomTokenRefreshView
