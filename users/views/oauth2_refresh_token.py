@@ -20,4 +20,4 @@ def refresh_token(request):
     except User.DoesNotExist:
         return Response({'error': 'invalid refresh token'}, status=status.HTTP_404_NOT_FOUND)
 
-    return redirect('token')
+    return redirect('refresh-token')

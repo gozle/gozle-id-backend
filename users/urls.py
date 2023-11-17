@@ -1,7 +1,6 @@
 from django.urls import path
 
 from users.views import *
-from users.views import verify_email
 
 urlpatterns = [
     path('auth/sign-up', sign_up),
