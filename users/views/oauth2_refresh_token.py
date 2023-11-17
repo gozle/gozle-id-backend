@@ -11,12 +11,12 @@ from users.models import User
 @csrf_exempt
 def refresh_token(request):
     try:
-         user_id = RefreshToken.objects.get(request.POST.get('refresh')).user
+        user_id = RefreshToken.objects.get(request.POST.get('refresh')).user
     except:
         return Response({'error': 'refresh token not found'}, status=status.HTTP_404_NOT_FOUND)
 
     try:
-        user = User.objects.get(pk=user_id)
+        User.objects.get(pk=user_id)
     except User.DoesNotExist:
         return Response({'error': 'invalid refresh token'}, status=status.HTTP_404_NOT_FOUND)
 
