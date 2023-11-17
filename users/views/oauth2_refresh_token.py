@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from users.models import User
 
 
-@api_view(['GET'])
+@api_view(['POST'])
 @csrf_exempt
 def refresh_token(request):
     try:
