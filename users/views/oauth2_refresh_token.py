@@ -12,12 +12,15 @@ from users.models import User
 def refresh_token(request):
     try:
          user_id = RefreshToken.objects.get(request.POST.get('refresh')).user
+         print('USER ID', user_id)
     except:
         return Response({'error': 'refresh token not found'}, status=status.HTTP_404_NOT_FOUND)
 
     try:
         user = User.objects.get(pk=user_id)
+        print('USER', user)
     except User.DoesNotExist:
+        print('USER NOT FOUND HAHAHAHAH')
         return Response({'error': 'invalid refresh token'}, status=status.HTTP_404_NOT_FOUND)
 
     return redirect('refresh-token')
