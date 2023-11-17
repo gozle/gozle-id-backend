@@ -1,8 +1,10 @@
 from django.urls import path
+from users.views import oauth2_refresh_token
 import oauth2_provider.views as oauth2_views
 
 urlpatterns = [
     path('authorize/', oauth2_views.AuthorizationView.as_view(), name="authorize"),
+    path('token/refresh/', oauth2_refresh_token, name="refresh_token"),
     path('token/', oauth2_views.TokenView.as_view(), name="token"),
     path('revoke-token/', oauth2_views.RevokeTokenView.as_view(), name="revoke-token"),
     path('admin/applications/', oauth2_views.ApplicationList.as_view(), name="list"),
