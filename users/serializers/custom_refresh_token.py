@@ -16,13 +16,8 @@ class CustomTokenRefreshSerializer(TokenRefreshSerializer):
     def validate(self, attrs):
         token_payload = token_backend.decode(attrs['refresh'])
         try:
-            user = get_user_model().objects.get(pk=token_payload['user_id'])
+            get_user_model().objects.get(pk=token_payload['user_id'])
         except get_user_model().DoesNotExist:
-            raise exceptions.AuthenticationFailed(
-                self.error_msg, 'no_active_account'
-            )
-
-        if not user.is_active or user.email != token_payload['user_email']:
             raise exceptions.AuthenticationFailed(
                 self.error_msg, 'no_active_account'
             )
