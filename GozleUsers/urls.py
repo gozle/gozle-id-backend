@@ -49,8 +49,8 @@ urlpatterns = [
     path('api/', include('users.urls')),
 
     # Simple JWT urls here
-    path('api/token/refresh/', refresh_token),
-    path('api/token/_refresh/', token_refresh, name="refresh-token"),
+    # path('api/token/refresh/', refresh_token),
+    path('api/token/refresh/', token_refresh, name="refresh-token"),
     path('api/token/verify/', token_verify),
 
     # Django Admin urls here
