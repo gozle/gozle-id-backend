@@ -16,6 +16,6 @@ def validate_names(value):
 
 # Function to validate phone number
 def validate_phone_number(value):
-    pattern = r'^(\+9936|9936|6|86)\d{7}$'
+    pattern = r'^(\+993)\d{8}$'
     if not re.match(pattern, value):
         raise ValidationError('Invalid phone number')
