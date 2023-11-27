@@ -48,8 +48,8 @@ urlpatterns = [
     path('api/', include('users.urls')),
 
     # Simple JWT urls here
-    # path('api/token/refresh/', CustomTokenRefreshView.as_view(), name='refresh-token'),
-    path('api/token/refresh/', token_refresh, name="refresh-token"),
+    path('api/token/refresh/', CustomTokenRefreshView.as_view(), name='refresh-token'),
+    # path('api/token/refresh/', token_refresh, name="refresh-token"),
     path('api/token/verify/', token_verify, name="verify-token"),
 
     # Django Admin urls here
