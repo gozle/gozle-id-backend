@@ -57,7 +57,7 @@ def verify_number(request):
         return Response({'status': False, 'Error': 'Invalid Code'}, status=status.HTTP_401_UNAUTHORIZED)
 
     verification = user.verifications.get(code=code)
-    if verification.type != "phone" or verification.code != code:
+    if verification.type != "phone":
         return Response({'status': False, 'Error': 'Invalid Code'}, status=status.HTTP_401_UNAUTHORIZED)
 
     # Activate user
@@ -65,17 +65,9 @@ def verify_number(request):
     user.save()
 
     # Delete verification code
-    # Exception for admin
+    # Exception for admin, do not delete admin verification code
     if not user.phone_number == settings.ADMIN_PHONE:
-        print('Deleted', user.phone_number, code)
-        try:
-            Verification.objects.get(code=code).delete()
-        except:
-            try:
-                Verification.objects.filter(user=user).delete()
-            except:
-                pass
-
+        verification.delete()
 
     # Check if 2FA is enabled
     if user.two_factor_auth == "password":

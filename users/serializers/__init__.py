@@ -8,3 +8,4 @@ from .city import CitySerializer
 from .region import RegionSerializer
 from .bank import BankSerializer
 from .order import OrderSerializer
+from .custom_refresh_token import CustomTokenRefreshSerializer

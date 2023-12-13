@@ -21,7 +21,8 @@ from drf_yasg import openapi
 from django.conf import settings
 from django.conf.urls.static import static
 from django.views.static import serve
-from rest_framework_simplejwt.views import TokenRefreshView, TokenVerifyView
+from rest_framework_simplejwt.views import token_refresh, token_verify
+from users.views import CustomTokenRefreshView
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -47,8 +48,9 @@ urlpatterns = [
     path('api/', include('users.urls')),
 
     # Simple JWT urls here
-    path('api/token/refresh/', TokenRefreshView.as_view()),
-    path('api/token/verify/', TokenVerifyView.as_view()),
+    path('api/token/refresh/', CustomTokenRefreshView.as_view(), name='refresh-token'),
+    # path('api/token/refresh/', token_refresh, name="refresh-token"),
+    path('api/token/verify/', token_verify, name="verify-token"),
 
     # Django Admin urls here
     path('api/admin/', admin.site.urls),

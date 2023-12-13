@@ -12,7 +12,7 @@ class ResourceUserSerializer(ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'username', 'first_name', 'last_name', 'avatar', "phone_number", "email",
-                  "theme", "language", "region"]
+                  "theme", "language", "region", "city", "birthday", "updated_at"]
 
     @staticmethod
     def get_avatar(obj):
