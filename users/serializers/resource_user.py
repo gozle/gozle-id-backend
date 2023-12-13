@@ -7,6 +7,7 @@ from users.models import User
 
 class ResourceUserSerializer(ModelSerializer):
     avatar = SerializerMethodField('get_avatar')
+    region = SerializerMethodField("get_region")
 
     class Meta:
         model = User
@@ -18,3 +19,7 @@ class ResourceUserSerializer(ModelSerializer):
         if obj.avatar:
             return settings.DOMAIN + obj.avatar.url
         return None
+
+    def get_region(self, obj):
+        if obj.region:
+            return obj.region.name
