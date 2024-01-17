@@ -21,9 +21,9 @@ class User(AbstractUser):
         message="Username must be alphanumeric and can only contain underscores",
         code='invalid_username'
     )])
-    first_name = models.CharField(max_length=100, validators=[validate_names])
-    last_name = models.CharField(max_length=100, validators=[validate_names])
-    birthday = models.DateField(null=True, blank=True)
+    first_name = models.CharField(max_length=100, validators=[validate_names])  # To remove
+    last_name = models.CharField(max_length=100, validators=[validate_names])  # To remove
+    birthday = models.DateField(null=True, blank=True)  # To remove
     balance = models.IntegerField(default=0, blank=True)
 
     ip_address = models.CharField(max_length=400, blank=True, null=True)
@@ -32,23 +32,23 @@ class User(AbstractUser):
     phone_number = models.CharField(
         max_length=30, unique=True, validators=[validate_phone_number])
 
-    email = models.TextField(blank=True, null=True)
-    email_verified = models.BooleanField(default=False, blank=True)
+    email = models.TextField(blank=True, null=True)  # To remove
+    email_verified = models.BooleanField(default=False, blank=True)  # To remove
 
     device_info = models.CharField(max_length=400, null=True, blank=True)
 
-    region = models.ForeignKey('users.Region', blank=True, null=True, on_delete=models.SET_NULL)
-    city = models.ForeignKey('users.City', blank=True, null=True, on_delete=models.SET_NULL)
-    gender = models.CharField(max_length=20, blank=True, null=True)
-    theme = models.CharField(max_length=10, default="light", blank=True)
-    language = models.ForeignKey(Language, on_delete=models.SET_NULL, null=True, blank=True)
+    region = models.ForeignKey('users.Region', blank=True, null=True, on_delete=models.SET_NULL)  # To Remove
+    city = models.ForeignKey('users.City', blank=True, null=True, on_delete=models.SET_NULL)  # To Remove
+    gender = models.CharField(max_length=20, blank=True, null=True)  # To Remove
+    theme = models.CharField(max_length=10, default="light", blank=True)  # To Remove
+    language = models.ForeignKey(Language, on_delete=models.SET_NULL, null=True, blank=True)  # To Remove
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     avatar = models.ImageField(
-        upload_to='avatars/%d', default='default/default_avatar.jpg', blank=True, null=True)
+        upload_to='avatars/%d', default='default/default_avatar.jpg', blank=True, null=True)  # To remove
     two_factor_auth = models.CharField(
-        max_length=20, default='default', blank=True)
+        max_length=20, default='default', blank=True)  # To Remove
 
     def __str__(self):
         return str(self.username)

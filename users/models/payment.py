@@ -13,16 +13,24 @@ def generate_verification_code():
     return ''.join(random.choices(string.ascii_letters + string.digits, k=40))
 
 
+STATUS_CHOICES = (
+    ('pending', 'Pending'),
+    ('accepted', 'Accepted'),
+    ('completed', 'Completed'),
+)
+
+
 class Payment(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='payments')
-    amount = models.IntegerField()
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='payments') # To Remove
+    amount = models.IntegerField()  # To Remove
     client = models.ForeignKey(Application, on_delete=models.PROTECT, related_name='payments')
     description = models.TextField(blank=True, null=True)
-    verification_code = models.CharField(max_length=40, blank=True)
+    verification_code = models.CharField(max_length=40, blank=True) # To Remove
 
-    accepted = models.BooleanField(default=False)
-    completed = models.BooleanField(default=False)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES)
+    accepted = models.BooleanField(default=False)  # To Remove
+    completed = models.BooleanField(default=False)  # To Remove
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

@@ -5,12 +5,12 @@ from users.models.user import User
 
 class Transfer(models.Model):
     sender = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='sent_transfers')
+        User, on_delete=models.CASCADE, related_name='sent_transfers') # To Remove
     receiver = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='received_transfers')
-    amount = models.IntegerField()
+    amount = models.IntegerField() # To Remove
 
-    verification_code = models.IntegerField()
+    verification_code = models.IntegerField() # To Remove
 
     completed = models.BooleanField(default=False, blank=True)
     date = models.DateTimeField(auto_now=True)
